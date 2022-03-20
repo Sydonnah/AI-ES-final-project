@@ -2,56 +2,85 @@
 
 :- use_module(library(pce)).
 
+
+
 illness(covid).
 
-illness_type(covid,regular).
-illness_type(covid,delta).
-illnes_type(covid,omicron).
+illness_type(covid,[regular,delta,omicron]).
 
-covid_symptoms(regular,fever).
-covid_symptoms(regular,cough).
-covid_symptoms(regular,fatigue).
-covid_symptoms(regular,'loss of taste').
-covid_symptoms(regular,headache).
+variant(regular,[fever,cough,fatigue,'loss of taste',headache]).
+variant(delta,[cough,fatigue,headache,'runny nose','sore throat']).
+variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose']).
 
-covid_symptoms(delta,cough).
-covid_symptoms(delta,fatigue).
-covid_symptoms(delta,headache).
-covid_symptoms(delta,'runny nose').
-covid_symptoms(delta,'sore throat').
-
-covid_symptoms(omicron,fatigue).
-covid_symptoms(omicron,headache).
-covid_symptoms(omicron,sneezing).
-covid_symptoms(omicron,'sore throat').
-covid_symptoms(omicron,'runny nose').
-
-underlying(omicron,cancer).
-underlying(omicron,'chronic kidney disease').
-underlying(omicron,'chronic liver disease').
-underlying(omicron,'chronic lung disease').
-underlying(omicron,'cystic fibrosis').
-underlying(omicron,dementia).
-underlying(omicron,alzheimers).
-underlying(omicron,diabetes).
-underlying(omicron,'heart conditions').
-underlying(omicron,'HIV').
-underlying(omicron,'sickle cell').
-underlying(omicron,stroke).
-underlying(omicron,tuberculosis).
+%enter symptom severity
 
 
-menu:-new(M,dialog('COVID-19 Diagnosis System - Main Menu')),
-    send(M,append,new(Lblfill,label)),send(Lblfill,append,''),
+underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
+
+menu:-new(M,dialog('COVID-19 Diagnosis System')),
+    send(M,append,new(Title,label)),send(Title,append,''),
     new(H1, dialog_group('')),
     new(H2, dialog_group('')),
     send(M,append,H1),
     send(M,append,H2,below),
 
-    send(H2,append,button(more_symptoms, message(@prolog,addfact))),
-    send(H1,append,new(Label1,label)),send(Label1,append,'Welcome to Covid-19 Diagnosis System of the Ministry of Health.'),
+    send(H2,append,button(new_Variant, message(@prolog,new_variant))),
+
+    %pushes next button into a new line.
+    send(H2,append,new(Lbl1,label)),send(Lbl1,append,''),
+
+    send(H2,append,button(underlying_Condition, message(@prolog,ucondition))),
+    send(H2,append,new(Lbl2,label)),send(Lbl2,append,''),
+    send(H2,append,button(covid_Statistics,message(@prolog,stat_display))),
+    send(H1,append,new(NewV1,label)),send(NewV1,append,'Welcome to Covid-19 Diagnosis System of the Ministry of Health.'),
 
     send(M,open).
+
+
+new_variant:-new(V,dialog('New Variant')),send(V,append,new(label)),
+    new(V1,dialog_group('')),
+    new(V2,dialog_group('')),
+
+    send(V,append,V1),
+    send(V,append,V2,below),
+
+    send(V1,append,new(Vl,label)),send(Vl,append,'Enter new Varaint information'),
+    send(V2,append,new(Name,text_item(variant_Name))),
+    send(V2,append,new(Symptoms,text_item(symptoms))),
+    send(V2,append,button(submit,message(@prolog,submit))),
+
+    send(V,open).
+
+
+ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
+
+    new(C1,dialog_group('')),send(C,append, C1),
+    new(C2,dialog_group('')),send(C,append, C2,below),
+
+    send(C2,append,button(new_Underlying_Conditions,message(@prolog,add_ucondition))),
+    send(C2,append,new(Lbl1a,label)),send(Lbl1a,append,''),
+    send(C2,append,button(view_Underlying_Conditons,message(@prolog,add))),
+    send(C1,append,new(NewCH,label)),send(NewCH,append,'This system allow you to add or view Underlying Conditions'),
+    send(C1,append,new(NewCH1,label)),send(NewCH1,append,'associated with the Omicron Variant.'),
+
+    send(C,open).
+
+add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
+    send(U,append,new(Uconditon,text_item(underlying_Condition))),
+    send(U,append,button(add,message(@prolog,add,Uconditon))),
+    send(U,open).
+
+
+add(Ucondition):- underlying(Old),append(Old,[Ucondition],New),
+    retractall(underlying(_)),assert(underlying(New)),
+    another_ucondition.
+
+
+another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
+     send(A,append,new(NewA1,label)),send(NewA1,append,'Would you like to add another'),
+     send(A,append,button(yes,message(@prolog,add_ucondition))),
+     send(A,append,button(no,message(@prolog,close/1))),
+     send(A,open).
 
 
 

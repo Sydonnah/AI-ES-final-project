@@ -13,7 +13,9 @@ variant(delta,[cough,fatigue,headache,'runny nose','sore throat']).
 variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose']).
 
 %enter symptom severity
-
+symptoms(mild,[fever,cough,tiredness,'loss of taste',headache]).
+symptoms(moderate,['sore throat','aches and pain',diarrhoea,'rash or discoloration of fingers or toes','irritated eyes']).
+symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
 
 underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
 

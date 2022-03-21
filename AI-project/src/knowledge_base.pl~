@@ -13,7 +13,9 @@ variant(delta,[cough,fatigue,headache,'runny nose','sore throat']).
 variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose']).
 
 %enter symptom severity
-
+symptoms(mild,[fever,cough,tiredness,'loss of taste',headache]).
+symptoms(moderate,['sore throat','aches and pain',diarrhoea,'rash or discoloration of fingers or toes','irritated eyes']).
+symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain']).
 
 underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
 
@@ -72,6 +74,7 @@ patient_diagnostic:-
     send(D,append,new(Name,text_item(name))),
     send(D,append,new(Age, text_item(age))),
     send(D,append,new(Gender,text_item(gender))),
+
     send(D,open).
 
 add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),

@@ -72,7 +72,6 @@ patient_diagnostic:-
     send(D,append,new(Name,text_item(name))),
     send(D,append,new(Age, text_item(age))),
     send(D,append,new(Gender,text_item(gender))),
-
     send(D,open).
 
 add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),

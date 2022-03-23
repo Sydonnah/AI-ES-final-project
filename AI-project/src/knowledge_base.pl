@@ -9,15 +9,14 @@ illness(covid).
 illness_type(covid,[regular,delta,omicron]).
 
 variant(regular,[fever,cough,fatigue,'loss of taste',headache]).
-variant(delta,[cough,fatigue,headache,'runny nose','sore throat']).
-variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose']).
+variant(delta,[cough,fatigue,headache,'runny nose','sore throat','muscle pain','difficulty breathing']).
+variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
 
-%enter symptom severity
-symptoms(mild,[fever,cough,tiredness,'loss of taste',headache]).
-symptoms(moderate,['sore throat','aches and pain',diarrhoea,'rash or discoloration of fingers or toes','irritated eyes']).
+symptoms(mild,[fever,cough,fatigue,'loss of taste',headache]).
+symptoms(moderate,['sore throat','muscle pain']).
 symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
 
-underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
+underlying(omicron,[cancer,stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
 
 menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(M,append,new(Title,label)),send(Title,append,''),
@@ -69,13 +68,13 @@ ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
 
     send(C,open).
 
-patient_diagnostic:-
-    new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label)),
-    send(D,append,new(Name,text_item(name))),
-    send(D,append,new(Age, text_item(age))),
-    send(D,append,new(Gender,text_item(gender))),
+%patient_diagnostic:-
+%    new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label)),
+ %   send(D,append,new(Name,text_item(name))),
+  %  send(D,append,new(Age, text_item(age))),
+   % send(D,append,new(Gender,text_item(gender))),
 
-    send(D,open).
+    %send(D,open).
 
 add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,append,new(Uconditon,text_item(underlying_Condition))),
@@ -83,8 +82,8 @@ add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,open).
 
 
-add(Ucondition):- underlying(Old),append(Old,[Ucondition],New),
-    retractall(underlying(_)),assert(underlying(New)),
+add(Ucondition):- underlying(omicron,Old),append(Old,[Ucondition],New),
+    retractall(underlying(_)),assert(underlying(omicron,New)),
     another_ucondition.
 
 

@@ -12,7 +12,7 @@ variant(regular,[fever,cough,fatigue,'loss of taste',headache]).
 variant(delta,[cough,fatigue,headache,'runny nose','sore throat','muscle pain','difficulty breathing']).
 variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
 
-symptoms(mild,[fever,cough,fatigue,'loss of taste',headache]).
+symptoms(mild,[fever,cough,fatigue,'loss of taste',headache,'runny nose', sneezing]).
 symptoms(moderate,['sore throat','muscle pain']).
 symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
 
@@ -50,7 +50,7 @@ new_variant:-new(V,dialog('New Variant')),send(V,append,new(label)),
     send(V1,append,new(Vl,label)),send(Vl,append,'Enter new Varaint information'),
     send(V2,append,new(Name,text_item(variant_Name))),
     send(V2,append,new(Symptoms,text_item(symptoms))),
-    send(V2,append,button(submit,message(@prolog,submit))),
+    send(V2,append,button(submit,message(@prolog,Name,Symptoms,submit))),
 
     send(V,open).
 

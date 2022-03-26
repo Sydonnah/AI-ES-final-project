@@ -15,7 +15,6 @@ prolog.consult(
 def Main():
 
     main = Tk()
-    main.configure(background="light blue")
     main.title("Covid-19 Diagnosis System")
     main.geometry("500x400")
     main.resizable(False, False)

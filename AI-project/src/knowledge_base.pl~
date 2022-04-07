@@ -18,7 +18,7 @@ symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain
 
 underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
 
-patient(name('jane'),age('20'),gender('female'),temp('78'),dizzy('yes'),faint('no'),blurry('no'),systolic('135'),diastolic('79')).
+patient(name('jane'),age('20'),gender('female'),temp(''),dizzy('yes'),faint('no'),blurry('no'),systolic('135'),diastolic('79')).
 
 menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(M,append,new(Title,label)),send(Title,append,''),
@@ -68,7 +68,7 @@ ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
 
     send(C2,append,button(new_Underlying_Conditions,message(@prolog,add_ucondition))),
     send(C2,append,new(Lbl1a,label)),send(Lbl1a,append,''),
-    send(C2,append,button(view_Underlying_Conditons,message(@prolog,view_ucondition))),
+    send(C2,append,button(view_Underlying_Conditons,message(@prolog,add))),
     send(C1,append,new(NewCH,label)),send(NewCH,append,'This system allow you to add or view Underlying Conditions'),
     send(C1,append,new(NewCH1,label)),send(NewCH1,append,'associated with the Omicron Variant.'),
 
@@ -129,7 +129,7 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(DG4,append,new(Liver,menu(liver_Disease,marked))),
 
 
-   send(Gender,append,female), send(Gender,append,male),
+   send(Gender,append,female),  send(Gender,append,male),
    send(Dizzy,append,yes),     send(Dizzy,append,no),
    send(Faint,append,yes),     send(Faint,append,no),
    send(Blur,append,yes),      send(Blur,append,no),
@@ -174,7 +174,6 @@ add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,append,button(add,message(@prolog,add,Uconditon?selection))),
     send(U,open).
 
-%veiw_condition:-
 
 add(Ucondition):- underlying(omicron,Old),append(Old,[Ucondition],New),
     retractall(underlying(_)),assert(underlying(omicron,New)),
@@ -187,7 +186,6 @@ another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
      send(A,append,button(no,message(@prolog,close/1))),
      send(A,open).
 
-%covid_stats:-
 
 
 

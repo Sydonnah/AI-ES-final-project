@@ -10,8 +10,7 @@ prolog = Prolog()
 
 prolog.consult(
     '/Users/Carlisha Nicholson/OneDrive/Documents/GitHub/AI-ES-final-project/AI-project/src/knowledge_base.pl')
-
-c = list(prolog.query("illness(Who)"))
+#c = list(prolog.query("illness(Who)"))
 
 # Home Page of Expert Systems
 

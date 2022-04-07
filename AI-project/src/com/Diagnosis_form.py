@@ -1,7 +1,5 @@
-from email.utils import parsedate_tz
-from operator import truediv
 from tkinter import *
-from xml.dom.minidom import ReadOnlySequentialNamedNodeMap
+from pyswip import Prolog
 
 # Patient Diagnositics Form
 
@@ -42,7 +40,7 @@ def Diagnosis():
         window, text="Do you or your family have a history of any of the following conditions?")
     underlyingsymp1 = Label(window, text="Cancer")
     underlyingsymp2 = Label(window, text="Stroke")
-    underlyingsymp3 = Label(window, text="Tuberulosis")
+    underlyingsymp3 = Label(window, text="Tuberculosis")
     underlyingsymp4 = Label(window, text="Sickle Cell")
     underlyingsymp5 = Label(window, text="HIV")
     underlyingsymp6 = Label(window, text="Heart Conditions")
@@ -66,399 +64,498 @@ def Diagnosis():
     s = Canvas(window, width=2, height=220)
     s.create_rectangle(0, 0, 220, 220, fill="black")
 
+    gender = StringVar(window)
+    dizzy = IntVar(window)
+    faint = IntVar(window)
+    blur = IntVar(window)
+    fever = IntVar(window)
+    cough = IntVar(window)
+    fatigue = IntVar(window)
+    l_o_t = IntVar(window)
+    head = IntVar(window)
+    run_nose = IntVar(window)
+    sore = IntVar(window)
+    muscle = IntVar(window)
+    diff_breath = IntVar(window)
+    sneeze = IntVar(window)
+    chest = IntVar(window)
+    b_o_c = IntVar(window)
+    losm = IntVar(window)
+
     fgender = Radiobutton(
         window,
         text='Female',
-        value='female'
+        variable=gender,
+        value="female"
     )
     mgender = Radiobutton(
         window,
         text='Male',
-        value='male'
+        variable=gender,
+        value="male"
     )
 
     diz_option1 = Checkbutton(
         window,
         text='Yes',
-        onvalue='0',
-        offvalue='1'
+        onvalue=1,
+        offvalue=0,
+        variable=dizzy
     )
-
     diz_option2 = Checkbutton(
         window,
         text='No',
-        onvalue='1',
-        offvalue='0'
+        onvalue=0,
+        offvalue=1,
+        variable=dizzy
     )
 
     faint_option1 = Checkbutton(
         window,
         text='Yes',
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=faint
     )
-
     faint_option2 = Checkbutton(
         window,
         text='No',
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=faint
     )
 
     vision_option1 = Checkbutton(
         window,
         text='Yes',
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=blur
     )
-
     vision_option2 = Checkbutton(
         window,
         text='No',
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=blur
     )
 
     symp1_option1 = Checkbutton(
         window,
         text='Yes',
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=fever
     )
-
     symp1_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=fever
     )
 
     symp2_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
-    )
+        onvalue='1',
+        offvalue='0',
+        variable=cough
 
+    )
     symp2_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=cough
     )
+
     symp3_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=fatigue
     )
-
     symp3_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=fatigue
     )
 
     symp4_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=l_o_t
     )
-
     symp4_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=l_o_t
     )
 
     symp5_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=head
     )
-
     symp5_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=head
     )
 
     symp6_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=run_nose
     )
-
     symp6_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=run_nose
     )
 
     symp7_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=sore,
     )
-
     symp7_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=sore
     )
 
     symp8_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=muscle
     )
-
     symp8_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=muscle
     )
 
     symp9_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=diff_breath
     )
     symp9_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=diff_breath
     )
 
     symp10_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=sneeze
     )
-
     symp10_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=sneeze
     )
 
     symp11_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=chest
     )
-
     symp11_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=chest
     )
 
     symp12_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=b_o_c
     )
-
     symp12_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=b_o_c
     )
 
     symp13_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue='0',
-        offvalue='1'
+        onvalue='1',
+        offvalue='0',
+        variable=losm
     )
-
     symp13_option2 = Checkbutton(
         window,
         text="No",
-        onvalue='1',
-        offvalue='0'
+        onvalue='0',
+        offvalue='1',
+        variable=losm
     )
+
+    cancer = IntVar(window)
+    stroke = IntVar(window)
+    tube = IntVar(window)
+    sick = IntVar(window)
+    hiv = IntVar(window)
+    heart = IntVar(window)
+    dia = IntVar(window)
+    alz = IntVar(window)
+    dem = IntVar(window)
+    cys = IntVar(window)
+    lung = IntVar(window)
+    liver = IntVar(window)
+    kid = IntVar(window)
 
     underlyingsymp1_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=cancer
     )
     underlyingsymp1_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=cancer
     )
+
     underlyingsymp2_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=stroke
     )
     underlyingsymp2_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=stroke
     )
+
     underlyingsymp3_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=tube
     )
     underlyingsymp3_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=tube
     )
+
     underlyingsymp4_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=sick
     )
     underlyingsymp4_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=sick
     )
+
     underlyingsymp5_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=hiv
     )
     underlyingsymp5_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=hiv
     )
+
     underlyingsymp6_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=heart
     )
     underlyingsymp6_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=heart
     )
+
     underlyingsymp7_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=dia
     )
     underlyingsymp7_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=dia
     )
+
     underlyingsymp8_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=alz
     )
     underlyingsymp8_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=alz
     )
+
     underlyingsymp9_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=dem
     )
     underlyingsymp9_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=dem
     )
+
     underlyingsymp10_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=cys
     )
     underlyingsymp10_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=cys
     )
+
     underlyingsymp11_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=lung
     )
     underlyingsymp11_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=lung
     )
+
     underlyingsymp12_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=liver
     )
     underlyingsymp12_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=liver
     )
+
     underlyingsymp13_option1 = Checkbutton(
         window,
         text="Yes",
-        onvalue="0",
-        offvalue="1"
+        onvalue="1",
+        offvalue="0",
+        variable=kid
     )
     underlyingsymp13_option2 = Checkbutton(
         window,
         text="No",
-        onvalue="1",
-        offvalue="0"
+        onvalue="0",
+        offvalue="1",
+        variable=kid
     )
+
+    def GetInfo():
+        print(nameentry.get())
+        print(ageentry.get())
+        print(gender.get())
+        print(dizzy.get())
 
     submit_button = Button(
         window,
-        text="Submit"
+        text="Submit",
+        command=GetInfo
+
     )
 
     namelabel.grid(row=0, column=0, padx=2, pady=2)
@@ -572,5 +669,11 @@ def Diagnosis():
     underlyingsymp13_option2.grid(row=26, column=2, padx=2, pady=2)
 
     submit_button.grid(row=40, column=0, padx=2, pady=15)
+
+    def GetInfo():
+        print(nameentry.get())
+        print(ageentry.get())
+        print(gender.get())
+        print(dizzy.get())
 
     window.mainloop()

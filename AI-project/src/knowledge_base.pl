@@ -161,13 +161,86 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(Liver,append,yes),     send(Liver,append,no),
 
    send(Age,type,int),
+   send(Temperature,type,int),
    send(SysR,type,int),
    send(DiaR,type,int),
 
-   send(D,append,button(accept, message(@prolog,save_patient, Name?selection, Age?selection, Gender?selection, Temperature?selection,Dizzy?selection,Faint?selection,Blur?selection,SysR?selection))),
+   send(D,append,button(accept, message(@prolog,save_diagnosis_prolog, Name?selection, Age?selection, Gender?selection, Temperature?selection,
+                                        Dizzy?selection, Faint?selection, Blur?selection, SysR?selection, DiaR?selection, Fever?selection,
+                                       Fatigue?selection, Head?selection, Sore?selection, DiffB?selection, Chest?selection, Losm?selection,
+                                       Cough?selection, Lot?selection, Run?selection, Muscle?selection, Sneeze?selection, Boc?selection,
+                                       Cancer?selection, Tb?selection, HIV?selection, Dia?selection, Dem?selection, Lung?selection,
+                                       Kid?selection, Stroke?selection, Sick?selection, Heart?selection, Alz?selection, Cys?selection,
+                                       Liver?selection))),
 
 
     send(D,open).
+
+save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,
+                      DiffB,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Tb,HIV,Dia,Dem,Lung,Kid,
+                      Stroke,Sick,Heart,Alz,Cys,Liver):-
+    new(SDP,dialog('Diagnosis Information')),
+    send(SDP,append,new(SDP1,label)),send(SDP1,append,'Name :'),
+    send(SDP,append,new(Lbl1,label)),send(Lbl1,append,Name),
+    send(SDP,append,new(SDP2,label)),send(SDP2,append,'Age :'),
+    send(SDP,append,new(Lbl2,label)),send(Lbl2,append,Age),
+    send(SDP,append,new(SDP3,label)),send(SDP3,append,'Gender :'),
+    send(SDP,append,new(Lbl3,label)),send(Lbl3,append,Gender),
+
+    Ftemp is (Temperature*1.8)+32,
+
+    send(SDP,append,new(SDP4,label)),send(SDP4,append,'Temperature(F) :'),
+    send(SDP,append,new(Lbl4,label)),send(Lbl4,append, Ftemp),
+
+    (Dizzy == 'yes' -> Dizzyval is 1; Dizzyval is 0),
+    (Faint == 'yes' -> Faintval is 1; Faintval is 0),
+    (Blur == 'yes' -> Blurval is 1; Blurval is 0),
+
+    Hyper is Dizzyval + Faintval + Blurval,
+
+    send(SDP,append,new(SDP5,label)),send(SDP5,append,'Systolic Reading :'),
+    send(SDP,append,new(Lbl5,label)),send(Lbl5,append,SysR),
+
+    send(SDP,append,new(SDP6,label)),send(SDP6,append,'Diastolic Reading :'),
+    send(SDP,append,new(Lbl6,label)),send(Lbl6,append,DiaR),
+
+    send(SDP,append,new(HyperLbl)),
+
+    ((Hyper = 3,SysR >= 140, DiaR >= 90 )-> send(HyperLbl,append,'You have High Blood Pressure');
+    (Hyper >=2, Faintval = 1, SysR < 140, SysR >= 120, DiaR > 80,DiaR >= 89 )->
+    send(HyperLbl, append,'You are at risk of High Blood Pressure');
+    (Hyper = 0, SysR < 120, DiaR <80) -> send(HyperLbl,append,'You have Normal Blood Pressure')),
+
+    (Fever == 'yes' -> Feverval is 1; Feverval is 0),
+    (Fatigue == 'yes' -> Fatigueval is 1; Fatigueval is 0),
+    (Head == 'yes' -> Headval is 1; Headval is 0),
+    (Sore == 'yes' -> Soreval is 1; Soreval is 0),
+    (DiffB == 'yes' -> DiffBval is 1; DiffBval is 0),
+    (Chest == 'yes' -> Chestval is 1; Chestval is 0),
+    (Losm == 'yes' -> Losmval is 1; Losmval is 0),
+    (Cough == 'yes' -> Coughval is 1; Coughval is 0),
+    (Lot == 'yes' -> Lotval is 1; Lotval is 0),
+    (Run == 'yes' -> Runval is 1; Runval is 0),
+    (Muscle == 'yes' -> Muscleval is 1; Muscleval is 0),
+    (Sneeze == 'yes' -> Sneezeval is 1; Sneezeval is 0),
+    (Boc == 'yes' -> Bocval is 1; Bocval is 0),
+    (Cancer == 'yes' -> Cancerval is 1; Cancerval is 0),
+    (Kid == 'yes' -> Kidval is 1; Kidval is 0),
+    (Tb == 'yes' -> Tbval is 1; Tbval is 0),
+    (HIV == 'yes' -> HIVval is 1; HIVval is 0),
+    (Dia == 'yes' -> Diaval is 1; Diaval is 0),
+    (Dem == 'yes' -> Demval is 1; Demval is 0),
+    (Lung == 'yes' -> Lungval is 1; Lungval is 0),
+    (Stroke == 'yes' -> Strokeval is 1; Strokeval is 0),
+    (Sick == 'yes' -> Sickval is 1; Sickval is 0),
+    (Heart == 'yes' -> Heartval is 1; Heartval is 0),
+    (Alz == 'yes' -> Alzval is 1; Alzval is 0),
+    (Cys == 'yes' -> Cysval is 1; Cysval is 0),
+    (Liver == 'yes' -> Liverval is 1; Liverval is 0),
+
+    send(SDP,open).
+
+
 
 add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,append,new(Uconditon,text_item(underlying_Condition))),

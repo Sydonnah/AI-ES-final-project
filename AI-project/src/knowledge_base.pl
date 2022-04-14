@@ -9,8 +9,9 @@ illness(covid).
 illness_type(covid,[regular,delta,omicron]).
 
 variant(regular,[fever,cough,fatigue,'loss of taste',headache]).
+
 variant(delta,[cough,fatigue,headache,'runny nose','sore throat','muscle pain','difficulty breathing']).
-variant(omicron,[fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
+variant(omicron,[cough,fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
 
 symptoms(mild,[fever,cough,fatigue,'loss of taste',headache,'runny nose', sneezing]).
 symptoms(moderate,['sore throat','muscle pain']).
@@ -58,7 +59,7 @@ new_variant:-new(V,dialog('New Variant')),send(V,append,new(label)),
 
 
 %update variant list
-%submit(Name,Symptoms):- .
+%submit(Name,Symptoms):- 
 
 
 ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
@@ -67,14 +68,14 @@ ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
     new(C2,dialog_group('')),send(C,append, C2,below),
 
     send(C2,append,button(new_Underlying_Conditions,message(@prolog,add_ucondition))),
-    send(C2,append,new(Lbl1a,label)),send(Lbl1a,append,''),
+    send(C2,append,new(CLbl1,label)),send(CLbl1,append,''),
     send(C2,append,button(view_Underlying_Conditons,message(@prolog,view_ucondition))),
     send(C1,append,new(NewCH,label)),send(NewCH,append,'This system allow you to add or view Underlying Conditions'),
     send(C1,append,new(NewCH1,label)),send(NewCH1,append,'associated with the Omicron Variant.'),
 
     send(C,open).
 
-patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label)),
+patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis Form' )),send(D,append,new(label)),
     new(DG1,dialog_group('')),
     new(DG2,dialog_group('')),
     new(DG3,dialog_group('')),
@@ -98,7 +99,7 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(D,append,DG2,right),
    send(DG1,append,new(Fever,menu(fever,marked))),
    send(DG1,append,new(Fatigue,menu(fatigue,marked))),
-   send(DG1,append,new(Head,menu(head,marked))),
+   send(DG1,append,new(Head,menu(headache,marked))),
    send(DG1,append,new(Sore,menu(sore_Throat, marked))),
    send(DG1,append,new(DiffB,menu(difficulty_Breathing,marked))),
    send(DG1,append,new(Chest,menu(chest_Pain, marked))),
@@ -179,18 +180,20 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
 save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,
                       DiffB,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Tb,HIV,Dia,Dem,Lung,Kid,
                       Stroke,Sick,Heart,Alz,Cys,Liver):-
-    new(SDP,dialog('Diagnosis Information')),
-    send(SDP,append,new(SDP1,label)),send(SDP1,append,'Name :'),
-    send(SDP,append,new(Lbl1,label)),send(Lbl1,append,Name),
-    send(SDP,append,new(SDP2,label)),send(SDP2,append,'Age :'),
-    send(SDP,append,new(Lbl2,label)),send(Lbl2,append,Age),
-    send(SDP,append,new(SDP3,label)),send(SDP3,append,'Gender :'),
-    send(SDP,append,new(Lbl3,label)),send(Lbl3,append,Gender),
 
-    Ftemp is (Temperature*1.8)+32,
+    new(SDP,dialog('Diagnosis Information')),send(SDP,append,new(label)),
+    send(SDP,append,new(SDP1,label)),send(SDP1,append,'Name :'),
+    send(SDP,append,new(SDP1A,label)),send(SDP1A,append,Name),
+    send(SDP1A,alignment, left),
+    send(SDP,append,new(SDP2,label)),send(SDP2,append,'Age :'),
+    send(SDP,append,new(SDP2A,label)),send(SDP2A,append,Age),
+    send(SDP,append,new(SDP3,label)),send(SDP3,append,'Gender :'),
+    send(SDP,append,new(SDP3A,label)),send(SDP3A,append,Gender),
+
+    Ftemp is ((Temperature*1.8)+32),
 
     send(SDP,append,new(SDP4,label)),send(SDP4,append,'Temperature(F) :'),
-    send(SDP,append,new(Lbl4,label)),send(Lbl4,append, Ftemp),
+    send(SDP,append,new(SDP4A,label)),send(SDP4A,append, Ftemp),
 
     (Dizzy == 'yes' -> Dizzyval is 1; Dizzyval is 0),
     (Faint == 'yes' -> Faintval is 1; Faintval is 0),
@@ -199,17 +202,22 @@ save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fev
     Hyper is Dizzyval + Faintval + Blurval,
 
     send(SDP,append,new(SDP5,label)),send(SDP5,append,'Systolic Reading :'),
-    send(SDP,append,new(Lbl5,label)),send(Lbl5,append,SysR),
+    send(SDP,append,new(SDP5A,label)),send(SDP5A,append,SysR),
 
     send(SDP,append,new(SDP6,label)),send(SDP6,append,'Diastolic Reading :'),
-    send(SDP,append,new(Lbl6,label)),send(Lbl6,append,DiaR),
+    send(SDP,append,new(SDP6A,label)),send(SDP6A,append,DiaR),
 
-    send(SDP,append,new(HyperLbl)),
+    send(SDP,append,new(HyperLbl,label)),
 
-    ((Hyper = 3,SysR >= 140, DiaR >= 90 )-> send(HyperLbl,append,'You have High Blood Pressure');
-    (Hyper >=2, Faintval = 1, SysR < 140, SysR >= 120, DiaR > 80,DiaR >= 89 )->
+
+    ((Hyper = 3,SysR >= 140, DiaR >= 90 )->
+    send(HyperLbl,append,'You have High Blood Pressure');
+
+    ((Hyper >0, Hyper < 3), Faintval = 1, (SysR < 140, SysR >= 120), (DiaR > 80,DiaR =< 89) )->
     send(HyperLbl, append,'You are at risk of High Blood Pressure');
-    (Hyper = 0, SysR < 120, DiaR <80) -> send(HyperLbl,append,'You have Normal Blood Pressure')),
+
+    (Hyper = 0, SysR < 120, DiaR <80) ->
+    send(HyperLbl,append,'You have Normal Blood Pressure')),
 
     (Fever == 'yes' -> Feverval is 1; Feverval is 0),
     (Fatigue == 'yes' -> Fatigueval is 1; Fatigueval is 0),
@@ -224,6 +232,7 @@ save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fev
     (Muscle == 'yes' -> Muscleval is 1; Muscleval is 0),
     (Sneeze == 'yes' -> Sneezeval is 1; Sneezeval is 0),
     (Boc == 'yes' -> Bocval is 1; Bocval is 0),
+
     (Cancer == 'yes' -> Cancerval is 1; Cancerval is 0),
     (Kid == 'yes' -> Kidval is 1; Kidval is 0),
     (Tb == 'yes' -> Tbval is 1; Tbval is 0),
@@ -238,8 +247,25 @@ save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fev
     (Cys == 'yes' -> Cysval is 1; Cysval is 0),
     (Liver == 'yes' -> Liverval is 1; Liverval is 0),
 
-    send(SDP,open).
+    Covid_common is Feverval + Fatigueval + Coughval + Headval + Lotval,
 
+    Underlyingval is Cancerval + Kidval + Tbval + HIVval +Diaval + Demval
+    + Lungval + Strokeval + Sickval + Heartval + Alzval + Cysval + Liverval,
+
+    % might add high temperature as a condition for not statement for regualar covid
+
+    send(SDP,append,new(InfectionLbl,label)),
+    ((Covid_common = 5, Runval = 1,Soreval = 1, Muscleval = 1, DiffBval = 1)->
+    send(InfectionLbl, append, 'You have the Delta Variant of Covid-19');
+
+    (Covid_common = 5, Sneezeval = 1, Soreval = 1, Runval = 1, Chestval = 1, Bocval =1,
+     DiffBval = 1, Losmval = 1, Underlyingval > 0 ) ->
+    send(InfectionLbl, append, 'You have the Omnicron Variant of Covid-19');
+
+    (Covid_common = 5, Ftemp > 100) ->
+    send(InfectionLbl, append,'You have Covid-19')),
+
+    send(SDP,open).
 
 
 add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),

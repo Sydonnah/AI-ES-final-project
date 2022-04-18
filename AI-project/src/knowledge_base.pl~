@@ -85,7 +85,7 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis Form' )),send(D,append,new
    send(D,append,new(Name,text_item(name))),
    send(D,append,new(Age, text_item(age))),
    send(D,append,new(Gender,menu(gender,marked))),
-   send(D,append,new(Temperature,text_item('temperature(C)'))),
+   send(D,append,new(Temperature,text_item(temperature))),
    send(D,append,new(D1,label)),send(D1,append,'Have you experienced any of the following symptoms?'),
    send(D,append,new(Dizzy,menu(dizziness,marked))),
    send(D,append,new(Faint,menu(fainting,marked))),

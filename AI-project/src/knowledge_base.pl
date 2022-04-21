@@ -3,21 +3,27 @@
 :- use_module(library(pce)).
 :- require([ append/3
 	   ]).
+:- dynamic underlying/1.
+:-dynamic variants/1.
 
 illness(covid).
 
 illness_type(covid,[regular,delta,omicron]).
 
-variant(regular,[fever,cough,fatigue,'loss of taste',headache]).
+variants(regular,[fever,cough,fatigue,'loss of taste',headache]).
 
-variant(delta,[cough,fatigue,headache,'runny nose','sore throat','muscle pain','difficulty breathing']).
-variant(omicron,[cough,fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
+variants(delta,[cough,fatigue,headache,'runny nose','sore throat','muscle pain','difficulty breathing']).
+variants(omicron,[cough,fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
 
 symptoms(mild,[fever,cough,fatigue,'loss of taste',headache,'runny nose', sneezing]).
 symptoms(moderate,['sore throat','muscle pain']).
 symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
 
-underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
+ underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart
+ conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung
+ disease','liver disease','kidney disease']).
+
+%underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV']).
 
 patient(name('jane'),age('20'),gender('female'),temp('78'),dizzy('yes'),faint('no'),blurry('no'),systolic('135'),diastolic('79')).
 
@@ -59,7 +65,12 @@ new_variant:-new(V,dialog('New Variant')),send(V,append,new(label)),
 
 
 %update variant list
-%submit(Name,Symptoms):-
+submit(Name,Symptoms):-
+       variants(Name,Old),append(Old,[Symptoms],New),
+       redefine_system_predicate('variants'(_,_)),
+       retractall(variants(_)),
+    assertz(variants(Name,(New))),
+    nl,write(Symptoms), write(' added to '),write(Name), write(' variant').
 
 
 ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
@@ -353,10 +364,16 @@ add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,append,button(add,message(@prolog,add,Uconditon?selection))),
     send(U,open).
 
-%veiw_condition:-
+view_condition:-
+       underlying(omicron,X) = write([Condition1|Condition2]).
 
+
+
+%adds another condition to database
 add(Ucondition):- underlying(omicron,Old),append(Old,[Ucondition],New),
-    retractall(underlying(_)),assert(underlying(omicron,New)),
+     redefine_system_predicate('underlying'(_,_)),
+       retractall(underlying(_)),
+    asserta(underlying(omicron,(New))),
     another_ucondition.
 
 

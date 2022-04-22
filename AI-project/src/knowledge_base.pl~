@@ -85,12 +85,12 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(D,append,new(Age, text_item(age))),
    send(D,append,new(Gender,menu(gender,marked))),
    send(D,append,new(Temperature,text_item(temperature))),
-  % send(D,append,new(D1,label)),send(D1,append,'Have you experienced any of the following symptoms?'),
-   send(DG1,append,new(Dizzy,menu(dizziness,marked))),
-   send(DG1,append,new(Faint,menu(fainting,marked))),
-   send(DG2,append,new(Blur,menu(blurry_vision,marked))),
-  % send(D,append,new(SysR,text_item(systolic_Reading))),
-  % send(D,append,new(DiaR,text_item(diastolic_Reading))),
+   send(D,append,new(D1,label)),send(D1,append,'Have you experienced any of the following symptoms?'),
+   send(D,append,new(Dizzy,menu(dizziness,marked))),
+   send(D,append,new(Faint,menu(fainting,marked))),
+   send(D,append,new(Blur,menu(blurry_vision,marked))),
+   send(D,append,new(SysR,text_item(systolic_Reading))),
+   send(D,append,new(DiaR,text_item(diastolic_Reading))),
    send(D,append,new(D2,label)),send(D2,append,'Have you experienced any of the following symptoms lately?'),
    send(D,append,DG1),
    send(DG1,alignment,left),
@@ -102,7 +102,7 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(DG1,append,new(Sore,menu(sore_Throat, marked))),
    send(DG1,append,new(DiffB,menu(difficulty_Breathing,marked))),
    send(DG1,append,new(Chest,menu(chest_Pain, marked))),
-   send(DG2,append,new(Losm, menu(loss_of_Speech_or_Mobility, marked))),
+   send(DG1,append,new(Losm, menu(loss_of_Speech_or_Mobility, marked))),
    send(DG2,append,new(Cough,menu(cough, marked))),
    send(DG2,append,new(Lot, menu(loss_of_Taste, marked))),
    send(DG2,append,new(Run,menu(runny_Nose, marked))),
@@ -162,10 +162,10 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
 
    send(Age,type,int),
    send(Temperature,type,int),
-  % send(SysR,type,int),
-  % send(DiaR,type,int),
+   send(SysR,type,int),
+   send(DiaR,type,int),
 
-  send(D,append,button(accept, message(@prolog,save_patient, Name?selection, Age?selection, Gender?selection, Temperature?selection,Dizzy?selection,Faint?selection,Blur?selection,Fever?selection,Fatigue?selection,Head?selection,Sore?selection,DiffB?selection,Chest?selection,Losm?selection,Cough?selection,Lot?selection,Run?selection,Muscle?selection,Sneeze?selection,Boc?selection,Cancer?selection,Dia?selection,Lung?selection,Kid?selection,Stroke?selection,Sick?selection,Heart?selection,Alz?selection,Cys?selection,Liver?selection))),
+  send(D,append,button(accept, message(@prolog,save_patient, Name?selection, Age?selection, Gender?selection, Temperature?selection,Dizzy?selection,Faint?selection,Blur?selection,SysR?selection,DiaR?selection,Fever?selection,Fatigue?selection,Head?selection,Sore?selection,DiffB?selection,Chest?selection,Losm?selection,Cough?selection,Lot?selection,Run?selection,Muscle?selection,Sneeze?selection,Boc?selection,Cancer?selection,Dia?selection,Lung?selection,Kid?selection,Stroke?selection,Sick?selection,Heart?selection,Alz?selection,Cys?selection,Liver?selection))),
 
 
     send(D,open).
@@ -188,45 +188,65 @@ another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
      send(A,append,button(no,message(@prolog,close/1))),
      send(A,open).
 
-bloodpressure:-
-    new(B,dialog('Blood Pressure Reading')),send(B,append,new(label)),
-    send(B,append,new(SysR,text_item(systolic_Reading))),
-    send(B,append,new(DiaR,text_item(diastolic_Reading))),
-
-    send(SysR,type,int),
-    send(DiaR,type,int),
-    send(B,append,button(accept,message(@prolog,save_reading,SysR?selection,DiaR?selection))),
-    send(B,open).
-
-save_reading(SysR,DiaR):-
-    new(SR,dialog('Blood Pressure Reading')),send(SR,append,new(label)),
-
-    (SysR<90->send(Lbl11,append,'Patient blood pressure is low');
-    SysR>90,SysR<120->send(Lbl12,append,'Patient blood pressure is normal');
-    SysR>120,SysR<129->send(Lbl13,append,'Patient blood pressure is elevated');
-    SysR=>130->send(Lbl14,append,'Patient blood pressure is high')),
-
-    (DiaR),
-    send(SR,open).
 
 %displays patient's COVID-19 result
-save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,Fever,Fatigue,Head,Sore,Diffb,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Dia,Lung,Kid,Stroke,Liver,Sick,Heart,Alz,Cys):-
-
-   (Dizzy=='yes'; Faint=='yes';Blur=='yes'->bloodpressure),
+save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,Diffb,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Dia,Lung,Kid,Stroke,Liver,Sick,Heart,Alz,Cys):-
 
     new(S,dialog('Patient Result')),send(S,append,new(label)),
-    send(S,append,new(Lbl4,label)),send(Lbl4,append,'Name: '),
-    send(S,append,new(Lbl5,label)),send(Lbl5,append,Name),
+    new(S1,dialog_group('')),
+    new(S2,dialog_group('')),
 
-    send(S,append,new(Lbl6,label)),send(Lbl6,append,'Age: '),
-    send(S,append,new(Lbl7,label)),send(Lbl7,append,Age),
+    send(S,append,S1),
+    send(S1,alignment,left),
+    send(S,append,S2,right),
+    send(S1,append,new(Lbl4,label)),send(Lbl4,append,'Name: '),
+    send(S2,append,new(Lbl5,label)),send(Lbl5,append,Name),
 
-    send(S,append,new(Lbl8,label)),send(Lbl8,append,'Gender: '),
-    send(S,append,new(Lbl9,label)),send(Lbl9,append,Gender),
+    send(S1,append,new(Lbl6,label)),send(Lbl6,append,'Age: '),
+    send(S2,append,new(Lbl7,label)),send(Lbl7,append,Age),
+
+    send(S1,append,new(Lbl8,label)),send(Lbl8,append,'Gender: '),
+    send(S2,append,new(Lbl9,label)),send(Lbl9,append,Gender),
 
     Temp is(((Temperature)*9)/5+ 32),
-    send(S,append,new(Lbl10,label)),send(Lbl10,append,'Temperature: '),
-    send(S,append,new(Lbl11,label)),send(Lbl11,append,Temp),
+    send(S1,append,new(Lbl10,label)),send(Lbl10,append,'Temperature: '),
+    send(S2,append,new(Lbl11,label)),send(Lbl11,append,'Patient temperature in Fahrenheit is',Temp),
+
+    send(S1,append,new(Lbl20,label)),send(Lbl20,append,'Patient Systolic Reading:'),
+    send(S1,append,new(Lbl21,label)),send(Lbl21,append,SysR),
+    send(S1,append,new(Lbl22,label)),send(Lbl22,append,'Patient Diastolic Reading:'),
+    send(S1,append,new(Lbl23,label)),send(Lbl23,append,DiaR),
+
+    (SysR<90-> send(Lbl12,append,'Patient blood pressure is low');
+    SysR>90,SysR<120-> send(Lbl12,append,'Patient blood pressure is normal');
+    SysR>120,SysR<129-> send(Lbl12,append,'Patient blood pressure is elevated');
+    SysR>=130-> send(Lbl12,append,'Patient blood pressure is high')),
+
+    (DiaR<80->send(Lbl13,append,'Patient blood pressure is low');
+    DiaR<80->send(Lbl13,append,'Patient blood pressure is normal');
+    DiaR<80->send(Lbl13,append,'Patient blood pressure is elevated');
+    DiaR<80->send(Lbl13,append,'Patient blood pressure is high')),
+
+
+    (Dizzy =='yes'-> Dissval is 1; Dissval is 0),
+    (Faint =='yes'-> Faintval is 1; Faintval is 0),
+    (Blur  =='yes'-> Blurval is 1; Blurval is 0),
+    (Fever=='yes'-> Feverval is 1; Feverval is 0),
+    (Fatigue =='yes'-> Fatigueval is 1; Fatigueval is 0),
+    (Head =='yes'-> Headval is 1; Headval is 0),
+    (Sore =='yes'-> Soreval is 1;Soreval  is 0),
+    (Diffb =='yes'-> Diffbval is 1; Diffbval is 0),
+    (Chest =='yes'-> Chestval is 1; Chestval is 0),
+    (Losm =='yes'-> Losmval is 1; Losmval is 0),
+    (Cough =='yes'-> Coughval is 1; Coughval is 0),
+    (Lot =='yes'-> Lotval is 1; Lotval is 0),
+    (Run =='yes'-> Runval is 1; Runval is 0),
+    (Muscle =='yes'-> Muscleval is 1; Muscleval is 0),
+    (Sneeze =='yes'-> Sneezeval is 1; Sneezeval is 0),
+    (Boc =='yes'-> Bocval is 1; Bocval is 0),
+
+    Riskfactor is Dissval+Faintval+Blurval+Feverval+Fatigueval+Headval+Soreval+Diffbval+Chestval+Losmval+Coughval+Lotval+Runval+Muscleval+Sneezeval+Bocval,
+
 
 
     send(S,open).

@@ -4,8 +4,8 @@
 :- require([ append/3
 	   ]).
 
-:-dynamic stats/5.
-stats(0,0,0,0,0).
+:-dynamic stats/6.
+stats(0,0,0,0,0,0).
 
 illness(covid).
 
@@ -39,7 +39,7 @@ menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(H2,append,new(Lbl2,label)),send(Lbl2,append,''),
     send(H2,append,button(patient_Diagnostic,message(@prolog,patient_diagnostic))),
     send(H2,append,new(Lbl3,label)),send(Lbl3,append,''),
-    send(H2,append,button(covid_Statistics,message(@prolog,stat_display))),
+    send(H2,append,button(covid_Statistics,message(@prolog,stats_display))),
     send(H1,append,new(NewV1,label)),send(NewV1,append,'Welcome to Covid-19 Diagnosis System of the Ministry of Health.'),
 
     send(M,open).
@@ -192,7 +192,7 @@ another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
      send(A,open).
 
 
-%displays patient's COVID-19 result
+%displays patient's COVID-19 results
 save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,Diffb,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Dia,Lung,Kid,Stroke,Liver,Sick,Heart,Alz,Cys):-
 
     new(S,dialog('Patient Result')),send(S,append,new(label)),
@@ -206,8 +206,8 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
     send(S,append,new(Lbl9,label)),send(Lbl9,append,Gender),
 
     Temp is(((Temperature)*9)/5+ 32),
-    send(S,append,new(Lbl10,label)),send(Lbl10,append,'Temperature: '),
-    send(S,append,new(Lbl11,label)),send(Lbl11,append,'Patient temperature in Fahrenheit is',Temp),
+    send(S,append,new(Lbl10,label)),send(Lbl10,append,'Temperature(Farenheit):'),
+    send(S,append,new(Lbl11,label)),send(Lbl11,append,Temp),
 
     send(S,append,new(Lbl20,label)),send(Lbl20,append,'Systolic Reading:'),
     send(S,append,new(Lbl21,label)),send(Lbl21,append,SysR),
@@ -225,6 +225,18 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
     DiaR<80->send(Lbl13,append,'Patient blood pressure is elevated');
     DiaR<80->send(Lbl13,append,'Patient blood pressure is high')),*/
 
+    (Cancer =='yes'-> Cancerval is 1; Cancerval is 0),
+    (Dia =='yes'-> Diaval is 1; Diaval is 0),
+    (Lung =='yes'-> Lungval is 1; Lungval is 0),
+    (Kid =='yes'-> Kidval is 1; Kidval is 0),
+    (Stroke =='yes'-> Strokeval is 1; Strokeval is 0),
+    (Liver =='yes'-> Liverval is 1; Liverval is 0),
+    (Sick =='yes'-> Sickval is 1;Sickval  is 0),
+    (Heart=='yes'-> Heartval is 1; Heartval is 0),
+    (Alz =='yes'-> Alzval is 1; Alzval is 0),
+    (Cys =='yes'-> Cysval is 1; Cysval is 0),
+
+    Underlyingfactor is Cancerval+Diaval,Lungval,Kidval,Strokeval,Liverval,Sickval,Heartval,Alzval,Cysval,
 
     (Dizzy =='yes'-> Dissval is 7; Dissval is 0),
     (Faint =='yes'-> Faintval is 7; Faintval is 0),
@@ -250,33 +262,54 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
 
    Riskfactor>24,Riskfactor=<58 ->Deltacount is 1, Omnicroncount is 0,Mildcount is 0, Severecount is 1, send(Lbl24,append,'Patient may have the Delta Covid-19 variant, Patient should visit the doctor immediately');
 
-    Riskfactor>58,Riskfactor=<108 ->Deltacount is 1, Omnicroncount is 0,Mildcount is 0, Severecount is 1, send(Lbl24,append,'Patient may have the Ominicron Covid-19 variant, Patient should visit the doctor immediately'));
+    Riskfactor>58,Riskfactor=<108,Underlyingfactor =< 1->Deltacount is 0, Omnicroncount is 1, Mildcount is 0, Severecount is 1, Underlyingcount is 1; Underlyingcount is 0, send(Lbl24,append,'Patient may have the Ominicron Covid-19 variant, Patient should visit the doctor immediately')),
 
-    updatestats(Deltacount,Omnicroncount,Mildcount,Severecount),
 
+    updatestats(Deltacount,Omnicroncount,Mildcount,Severecount,Underlyingcount),
 
 
     send(S,open).
 
- updatestats(Deltacount,Omnicroncount,Mildcount,Severecount):-
-    stats(Dcount,Ocount,Mcount,Scount,Totalcount),
+ updatestats(Deltacount,Omnicroncount,Mildcount,Severecount,Underlyingcount):-
+    stats(Dcount,Ocount,Mcount,Scount,Totalcount,Ucount),
 
     NewDcount is Dcount+Deltacount,
     NewOcount is Ocount+Omnicroncount,
     NewMcount is Mcount+Mildcount,
     NewScount is Scount+Severecount,
+    NewUcount is Ucount+Underlyingcount,
     NewTcount is Totalcount+1,
 
-    retractall(stats(_,_,_,_,_)),
+    retractall(stats(_,_,_,_,_,_)),
 
-    assert(stats(NewDcount,NewOcount,NewMcount,NewScount,NewTcount)).
+    assert(stats(NewDcount,NewOcount,NewMcount,NewScount,NewUcount,NewTcount)).
 
+stats_display:-
+    stats(Deltacount,Omnicroncount,Mildcount,Severecount,Underlyingcount,Totalcount),
+    new(CS,dialog('Covid-19 Statistics')),send(CS,append,new(label)),
 
+    Mildstat is(Mildcount/Totalcount)*100,
+    send(CS,append,new(Lbl25,label)), send(Lbl25,append,'% of persons with Mild Symptoms:'),
+    send(CS,append,new(Lbl26,label)),send(Lbl26,append,Mildstat),
 
+    Severestat is(Severecount/Totalcount)*100,
+    send(CS,append,new(Lbl25,label)), send(Lbl25,append,'% of persons with Severe Symptoms:'),
+    send(CS,append,new(Lbl26,label)),send(Lbl26,append,Severestat),
 
+    Deltastat is(Deltacount/Totalcount)*100,
+    send(CS,append,new(Lbl25,label)), send(Lbl25,append,'% of persons with Delta Variant:'),
+    send(CS,append,new(Lbl26,label)),send(Lbl26,append,Deltastat),
 
+    Omnicronstat is(Omnicroncount/Totalcount)*100,
+    send(CS,append,new(Lbl25,label)), send(Lbl25,append,'% of persons with Omnicron Variant:'),
+    send(CS,append,new(Lbl26,label)),send(Lbl26,append,Omnicronstat),
 
-%covid_stats:-
+    OUnderlyingstat is(Underlyingcount/Totalcount)*100,
+    send(CS,append,new(Lbl25,label)), send(Lbl25,append,'% of persons with Omnicron and Underlying Conditions'),
+    send(CS,append,new(Lbl26,label)),send(Lbl26,append,OUnderlyingstat),
+    send(CS,open)
+    .
+
 
 
 

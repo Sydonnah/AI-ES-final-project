@@ -3,8 +3,16 @@
 :- use_module(library(pce)).
 :- require([ append/3
 	   ]).
-:- dynamic underlying/1.
+:-dynamic underlying/1.
 :-dynamic variants/1.
+:-dynamic statistics/1.
+:-dynamic statistics/2.
+:-dynamic statistics/3.
+:-dynamic statistics/4.
+:-dynamic statistics/5.
+
+
+statistics(0,0,0,0,0).
 
 illness(covid).
 
@@ -19,13 +27,13 @@ symptoms(mild,[fever,cough,fatigue,'loss of taste',headache,'runny nose', sneezi
 symptoms(moderate,['sore throat','muscle pain']).
 symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
 
- underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart
+underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart
  conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung
  disease','liver disease','kidney disease']).
 
 %underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV']).
 
-patient(name('jane'),age('20'),gender('female'),temp('78'),dizzy('yes'),faint('no'),blurry('no'),systolic('135'),diastolic('79')).
+patient(name('jane'),age('20'),gender('female'),temp('35'),dizzy('yes'),faint('no'),blurry('no'),systolic('135'),diastolic('79')).
 
 menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(M,append,new(Title,label)),send(Title,append,''),
@@ -40,10 +48,15 @@ menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(H2,append,new(Lbl1,label)),send(Lbl1,append,''),
 
     send(H2,append,button(underlying_Condition, message(@prolog,ucondition))),
+
     send(H2,append,new(Lbl2,label)),send(Lbl2,append,''),
+
     send(H2,append,button(patient_Diagnostic,message(@prolog,patient_diagnostic))),
+
     send(H2,append,new(Lbl3,label)),send(Lbl3,append,''),
+
     send(H2,append,button(covid_Statistics,message(@prolog,stat_display))),
+
     send(H1,append,new(NewV1,label)),send(NewV1,append,'Welcome to Covid-19 Diagnosis System of the Ministry of Health.'),
 
     send(M,open).
@@ -267,19 +280,20 @@ save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fev
 
     send(SDP,append,new(InfectionLbl,label)),
     ((Covid_common = 5, Ftemp > 100, Runval = 1,Soreval = 1, Muscleval = 1, DiffBval = 1)->
-    send(InfectionLbl, append, 'You have the Delta Variant of Covid-19');
+    send(InfectionLbl, append, 'You have the Delta Variant of Covid-19'), Delval is 1, Covidval is 1, Mildval is 1;
 
     (Covid_common = 5,Ftemp > 100, Sneezeval = 1, Soreval = 1, Runval = 1, Chestval = 1, Bocval =1,
      DiffBval = 1, Losmval = 1, Underlyingval > 0 ) ->
-    send(InfectionLbl, append, 'You have the Omicron Variant of Covid-19');
+    send(InfectionLbl, append, 'You have the Omicron Variant of Covid-19'), Omival is 1, Covidval is 1, Sevval is 1 ;
 
     (Covid_common = 5,Ftemp > 100) ->
-    send(InfectionLbl, append,'You have Covid-19');
+    send(InfectionLbl, append,'You have Covid-19'), Covidval is 1,Mildval is 1;
 
     (Covid_common = 0,Ftemp < 100) ->
     send(InfectionLbl,append, 'You do not have Covid-19')),
 
-    %assert to update datbase
+    %update statistics
+    updatestats(Covidval,Delval,Omival,Mildval,Sevval),
 
     send(SDP,open).
 
@@ -342,20 +356,20 @@ save_diagnosis_python(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fev
     + Lungval + Strokeval + Sickval + Heartval + Alzval + Cysval + Liverval,
 
     ((Covid_common = 5, Ftemp > 100, Runval = 1,Soreval = 1, Muscleval = 1, DiffBval = 1)->
-     nl,write(Name),write(' has the Delta Variant of Covid-19');
+     nl,write(Name),write(' has the Delta Variant of Covid-19'),Delval is 1, Covidval is 1, Mildval is 1;
 
     (Covid_common = 5,Ftemp > 100, Sneezeval = 1, Soreval = 1, Runval = 1, Chestval = 1, Bocval =1,
      DiffBval = 1, Losmval = 1, Underlyingval > 0 ) ->
-    nl,write(Name), write( ' has the Omicron Variant of Covid-19');
+    nl,write(Name), write( ' has the Omicron Variant of Covid-19'),Omival is 1, Covidval is 1,Sevval is 1;
 
     (Covid_common = 5,Ftemp > 100) ->
-     nl,write(Name),write(' has Covid-19');
+     nl,write(Name),write(' has Covid-19'), Covidval is 1, Mildval is 1;
 
     (Covid_common = 0,Ftemp < 100) ->
-     nl,write(Name), write(' does not have Covid-19')).
-%assert to update datbase
+     nl,write(Name), write(' does not have Covid-19')),
 
-
+   %update statistics
+    updatestats(Covidval,Delval,Omival,Mildval,Sevval).
 
 
 
@@ -364,8 +378,8 @@ add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,append,button(add,message(@prolog,add,Uconditon?selection))),
     send(U,open).
 
-view_condition:-
-       underlying(omicron,X) = write([Condition1|Condition2]).
+view_ucondition:-
+       underlying(omicron,Who),nl,write('Omicron Underlying Conditions:'),nl,nl,write(Who).
 
 
 
@@ -383,7 +397,22 @@ another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
      send(A,append,button(no,message(@prolog,close/1))),
      send(A,open).
 
-%covid_stats:-
+updatestats(Covid,Delta,Omicron,Mild,Severe):-  statistics(Total,Deltavar,Omivar,Mildsymp,Sevsymp), Newtotal is Total + Covid,
+       Newdeltavar is Deltavar + Delta,
+       Newomivar is Omivar + Omicron,
+       Newmildsymp is Mildsymp + Mild,
+       Newsevsymp is Sevsymp + Severe,
+
+       retractall(statistics(_,_,_,_,_)),asserta(statistics(Newtotal,Newdeltavar,Newomivar,Newmildsymp,Newsevsymp)),
+       nl,write('The Total number of people with Covid-19 is: '), write(Newtotal),
+       Deltapercent is Newdeltavar/Newtotal * 100,
+       nl,nl,write('The percentage of Delta variant recorded: '), write(Deltapercent),write('%'),
+       Omipercent is Newomivar/Newtotal * 100,
+       nl,write('The percentage of Omicron variant recorded: '), write(Omipercent),write('%'),
+        Mildpercent is Newmildsymp/Newtotal * 100,
+       nl,write('The percentage of Mild Symptoms recorded: '), write(Mildpercent),write('%'),
+        Sevpercent is Newsevsymp/Newtotal * 100,
+       nl,write('The percentage of Severe Symptoms recorded: '), write(Sevpercent),write('%').
 
 
 

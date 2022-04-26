@@ -99,13 +99,13 @@ save_rsymptom(RSymptoms):-
     nl,write('Symptom:'),write(S),write(' was added to the database').
 
 save_dsymptom(DSymptoms):-
-    regularsymptoms(Old),append(Old,[DSymptoms],New),
-    retractall(regularsymptoms(_)),assert(regularsymptoms(New)),regularsymptoms(S),
+    deltasymptoms(Old),append(Old,[DSymptoms],New),
+    retractall(regularsymptoms(_)),assert(deltasymptoms(New)),regularsymptoms(S),
     nl,write('Symptom:'),write(S),write(' was added to the database').
 
 save_osymptom(OSymptoms):-
-    regularsymptoms(Old),append(Old,[OSymptoms],New),
-    retractall(regularsymptoms(_)),assert(regularsymptoms(New)),regularsymptoms(S),
+    deltasymptoms(Old),append(Old,[OSymptoms],New),
+    retractall(regularsymptoms(_)),assert(deltasymptoms(New)),regularsymptoms(S),
     nl,write('Symptom:'),write(S),write(' was added to the database').
 
 
@@ -318,7 +318,7 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
 
 %
 updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount):-
-    stats(Dcount,Ocount,Mcount,Scount,Totalcount,Ucount),
+    stats(Dcount,Ocount,Mcount,Scount,Ucount,Totalcount),
 
     NewDcount is Dcount+Deltacount,
     NewOcount is Ocount+Omicroncount,
@@ -337,12 +337,13 @@ updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount):-
 stats_display:-
     stats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount,Totalcount),
     new(CS,dialog('Covid-19 Statistics')),send(CS,append,new(label)),
+    nl,write('Total Count:'),write(Totalcount),
 
-    Mildstat is(Severecount/Totalcount)*100,
+    Mildstat is(Mildcount/Totalcount)*100,
     send(CS,append,new(Lbl25,label)),send(Lbl25,append,'% of persons with Mild Symptoms:'),
     send(CS,append,new(Lbl26,label)),send(Lbl26,append,Mildstat),
 
-    Severestat is(Mildcount/Totalcount)*100,
+    Severestat is(Severecount/Totalcount)*100,
     send(CS,append,new(Lbl27,label)),send(Lbl27,append,'% of persons with Severe Symptoms:'),
     send(CS,append,new(Lbl28,label)),send(Lbl28,append,Severestat),
 

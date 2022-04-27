@@ -100,13 +100,13 @@ save_rsymptom(RSymptoms):-
 
 save_dsymptom(DSymptoms):-
     deltasymptoms(Old),append(Old,[DSymptoms],New),
-    retractall(regularsymptoms(_)),assert(deltasymptoms(New)),regularsymptoms(S),
-    nl,write('Symptom:'),write(S),write(' was added to the database').
+    retractall(deltasymptoms(_)),assert(deltasymptoms(New)),regularsymptoms(DS),
+    nl,write('Symptom:'),write(DS),write(' was added to the database').
 
 save_osymptom(OSymptoms):-
     deltasymptoms(Old),append(Old,[OSymptoms],New),
-    retractall(regularsymptoms(_)),assert(deltasymptoms(New)),regularsymptoms(S),
-    nl,write('Symptom:'),write(S),write(' was added to the database').
+    retractall(omicronsymptoms(_)),assert(deltasymptoms(New)),regularsymptoms(OS),
+    nl,write('Symptom:'),write(OS),write(' was added to the database').
 
 
 ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
@@ -304,9 +304,9 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
 
     %determines whether a person has the regular, delta or omicron variant
     send(S,append,new(Lbl24,label)),
-    (Riskfactor=<24 ->Deltacount is 0, Omicroncount is 0,Mildcount is 1, Severecount is 0,Underlyingcount is 0, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Regular Covid-19 variant, Patient should quarantine for 14 days');
+    (Riskfactor=<28 ->Deltacount is 0, Omicroncount is 0,Mildcount is 1, Severecount is 0,Underlyingcount is 0, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Regular Covid-19 variant, Patient should quarantine for 14 days');
 
-   Riskfactor>24,Riskfactor=<58 ->Deltacount is 1, Omicroncount is 0,Mildcount is 0, Severecount is 1,Underlyingcount is 0, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Delta Covid-19 variant, Patient should visit the doctor immediately');
+   Riskfactor>28,Riskfactor=<58 ->Deltacount is 1, Omicroncount is 0,Mildcount is 0, Severecount is 1,Underlyingcount is 0, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Delta Covid-19 variant, Patient should visit the doctor immediately');
 
     Riskfactor>58,Underlyingfactor >=1 ->Deltacount is 0, Omicroncount is 1, Mildcount is 0, Severecount is 1, Underlyingcount is 1, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Ominicron Covid-19 variant, Patient should visit the doctor immediately')),
 
@@ -318,7 +318,7 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
 
 %
 updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount):-
-    stats(Dcount,Ocount,Mcount,Scount,Totalcount,Ucount),
+    stats(Dcount,Ocount,Mcount,Scount,Ucount,Totalcount),
 
     NewDcount is Dcount+Deltacount,
     NewOcount is Ocount+Omicroncount,
@@ -340,23 +340,23 @@ stats_display:-
     nl,write('Total Count:'),write(Totalcount),
 
     Mildstat is(Mildcount/Totalcount)*100,
-    send(CS,append,new(Lbl25,label)),send(Lbl25,append,'% of persons with Mild Symptoms:'),
+    send(CS,append,new(Lbl25,label)),send(Lbl25,append,'Percentages of persons with Mild Symptoms:'),
     send(CS,append,new(Lbl26,label)),send(Lbl26,append,Mildstat),
 
     Severestat is(Severecount/Totalcount)*100,
-    send(CS,append,new(Lbl27,label)),send(Lbl27,append,'% of persons with Severe Symptoms:'),
+    send(CS,append,new(Lbl27,label)),send(Lbl27,append,'Percentages of Persons with Severe Symptoms:'),
     send(CS,append,new(Lbl28,label)),send(Lbl28,append,Severestat),
 
     Deltastat is(Deltacount/Totalcount)*100,
-    send(CS,append,new(Lbl29,label)),send(Lbl29,append,'% of persons with Delta Variant:'),
+    send(CS,append,new(Lbl29,label)),send(Lbl29,append,'Percentages of Persons with Delta Variant Percentages:'),
     send(CS,append,new(Lbl30,label)),send(Lbl30,append,Deltastat),
 
     Omicronstat is(Omicroncount/Totalcount)*100,
-    send(CS,append,new(Lbl31,label)),send(Lbl31,append,'% of persons with Omicron Variant:'),
+    send(CS,append,new(Lbl31,label)),send(Lbl31,append,'Percentages of Persons with Omicron Variant Percentages:'),
     send(CS,append,new(Lbl32,label)),send(Lbl32,append,Omicronstat),
 
     OUnderlyingstat is(Underlyingcount/Totalcount)*100,
-    send(CS,append,new(Lbl33,label)),send(Lbl33,append,'% of persons with Omicron and Underlying Conditions: '),
+    send(CS,append,new(Lbl33,label)),send(Lbl33,append,'Percentages of Persons with Omicron and Underlying Conditions: '),
 
     send(CS,append,new(Lbl34,label)),send(Lbl34,append,OUnderlyingstat),
 

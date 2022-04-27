@@ -21,7 +21,7 @@ regularsymptoms([fever,cough,fatigue,'loss of taste or smell',headache,'congesti
 deltasymptoms([fever,cough,fatigue,'loss of taste or smell',headache,'congestion or runny nose', sneezing,'sore throat',diarrhea]).
 omicronsymptoms([fever,cough,fatigue,'loss of taste or smell',headache,'congestion or runny nose', sneezing,'sore throat',diarrhea,'muscle pain','difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
 
-underlying(omicron,[stroke,tuberculosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
+underlying(omicron,[stroke,'sickle cell','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
 
 menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(M,append,new(Title,label)),send(Title,append,''),
@@ -169,10 +169,10 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
 
    send(D,append,DG4,right),
    send(DG3,append,new(Cancer,menu(cancer,marked))),
-   send(DG3,append,new(Tb,menu(tuberculosis,marked))),
-   send(DG3,append,new(HIV,menu(hIV,marked))),
+
+
    send(DG3,append,new(Dia,menu(diabetes,marked))),
-   send(DG3,append,new(Dem,menu(dementia,marked))),
+
    send(DG3,append,new(Lung,menu(lung_Disease,marked))),
    send(DG3,append,new(Kid,menu(kidney_Disease,marked))),
    send(DG4,append,new(Stroke,menu(stroke,marked))),
@@ -201,10 +201,10 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(Sneeze,append,yes),    send(Sneeze,append,no),
    send(Boc,append,yes),       send(Boc,append,no),
    send(Cancer,append,yes),    send(Cancer,append,no),
-   send(Tb,append,yes),        send(Tb,append,no),
-   send(HIV,append,yes),       send(HIV,append,no),
+
+
    send(Dia,append,yes),       send(Dia,append,no),
-   send(Dem,append,yes),       send(Dem,append,no),
+
    send(Lung,append,yes),      send(Lung,append,no),
    send(Kid,append,yes),       send(Kid,append,no),
    send(Stroke,append,yes),    send(Stroke,append,no),
@@ -318,6 +318,64 @@ save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigu
 
 
     send(S,open).
+
+save_patient_python(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,Diffb,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,
+             Dia,Lung,Kid,Stroke,Sick,Heart,Alz,Cys,Liver):-
+
+    nl,write('Name: '),write(Name),
+    nl,write('Age: '),write(Age),
+    nl,write('Gender: '),write(Gender),
+    Ftemp is ((Temperature*1.8)+32),
+    nl,write('Temperature(F): '), write(Ftemp),
+
+     ((SysR<90,DiaR<60) -> nl,write('Blood Pressure Reading: Patient blood pressure is low');
+    (SysR<120,DiaR<80) -> nl,write('Blood Pressure Reading: Patient blood pressure is normal');
+    (SysR<129,DiaR<89) -> nl,write('Blood Pressure Reading: Patient blood pressure is elevated');
+    (SysR>130,DiaR>89) -> nl,write('Blood Pressure Reading: Patient blood pressure is high')),
+
+    (Cancer =='yes'-> Cancerval is 1; Cancerval is 0),
+    (Dia =='yes'-> Diaval is 1; Diaval is 0),
+    (Lung =='yes'-> Lungval is 1; Lungval is 0),
+    (Kid =='yes'-> Kidval is 1; Kidval is 0),
+    (Stroke =='yes'-> Strokeval is 1; Strokeval is 0),
+    (Liver =='yes'-> Liverval is 1; Liverval is 0),
+    (Sick =='yes'-> Sickval is 1;Sickval  is 0),
+    (Heart=='yes'-> Heartval is 1; Heartval is 0),
+    (Alz =='yes'-> Alzval is 1; Alzval is 0),
+    (Cys =='yes'-> Cysval is 1; Cysval is 0),
+
+    Underlyingfactor is Cancerval+Diaval+Lungval+Kidval+Strokeval+Liverval+Sickval+Heartval+Alzval+Cysval,
+
+    (Dizzy =='yes'-> Dissval is 7; Dissval is 0),
+    (Faint =='yes'-> Faintval is 7; Faintval is 0),
+    (Blur  =='yes'-> Blurval is 7; Blurval is 0),
+    (Fever=='yes'-> Feverval is 5; Feverval is 0),
+    (Fatigue =='yes'-> Fatigueval is 6; Fatigueval is 0),
+    (Head =='yes'-> Headval is 3; Headval is 0),
+    (Sore =='yes'-> Soreval is 5;Soreval  is 0),
+    (Diffb =='yes'-> Diffbval is 12; Diffbval is 0),
+    (Chest =='yes'-> Chestval is 9; Chestval is 0),
+    (Losm =='yes'-> Losmval is 14; Losmval is 0),
+    (Cough =='yes'-> Coughval is 1; Coughval is 0),
+    (Lot =='yes'-> Lotval is 6; Lotval is 0),
+    (Run =='yes'-> Runval is 3; Runval is 0),
+    (Muscle =='yes'-> Muscleval is 8; Muscleval is 0),
+    (Sneeze =='yes'-> Sneezeval is 2; Sneezeval is 0),
+    (Boc =='yes'-> Bocval is 13; Bocval is 0),
+
+    Riskfactor is Dissval+Faintval+Blurval+Feverval+Fatigueval+Headval+Soreval+Diffbval+Chestval+Losmval+Coughval+Lotval+Runval+Muscleval+Sneezeval+  Bocval,
+
+      (Riskfactor=<28 ->Deltacount is 0, Omicroncount is 0,Mildcount is 1, Severecount is 0,Totalcount is 1,
+       nl,write('Covid-19 Diagnosis: Patient may have the Regular Covid-19 variant, Patient should quarantine for 14 days');
+
+   (Riskfactor>28,Riskfactor=<58) ->Deltacount is 1, Omicroncount is 0,Mildcount is 0, Severecount is 1,Totalcount is 1,
+       nl,write('Covid-19 Diagnosis: Patient may have the Delta Covid-19 variant, Patient should visit the doctor immediately');
+
+    (Riskfactor>58,Underlyingfactor >=1) ->Deltacount is 0, Omicroncount is 1, Mildcount is 0, Severecount is 1, Underlyingcount is 1, Totalcount is 1,
+       nl,write('Covid-19 Diagnosis: Patient may have the Ominicron Covid-19 variant, Patient should visit the doctor immediately')),
+
+
+    updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount,Totalcount).
 
 updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount,Totalcount):-
     stats(Dcount,Ocount,Mcount,Scount,Ucount,Total),

@@ -3,25 +3,37 @@
 :- use_module(library(pce)).
 :- require([ append/3
 	   ]).
+:-dynamic underlying/1.
+:-dynamic variants/1.
+:-dynamic statistics/1.
+:-dynamic statistics/2.
+:-dynamic statistics/3.
+:-dynamic statistics/4.
+:-dynamic statistics/5.
 
-:-dynamic omicronsymptoms/14.
-:-dynamic stats/1.
-:-dynamic stats/2.
-:-dynamic stats/3.
-:-dynamic stats/4.
-:-dynamic stats/5.
-:-dynamic stats/6.
-stats(0,0,0,0,0,0).
+
+statistics(0,0,0,0,0).
 
 illness(covid).
 
 illness_type(covid,[regular,delta,omicron]).
 
-regularsymptoms([fever,cough,fatigue,'loss of taste or smell',headache,'congestion or runny nose']).
-deltasymptoms([fever,cough,fatigue,'loss of taste or smell',headache,'congestion or runny nose', sneezing,'sore throat',diarrhea]).
-omicronsymptoms([fever,cough,fatigue,'loss of taste or smell',headache,'congestion or runny nose', sneezing,'sore throat',diarrhea,'muscle pain','difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
+variants(regular,[fever,cough,fatigue,'loss of taste',headache]).
 
-underlying(omicron,[stroke,tuberculosis,'sickle cell','HIV','heart conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung disease','liver disease','kidney disease']).
+variants(delta,[cough,fatigue,headache,'runny nose','sore throat','muscle pain','difficulty breathing']).
+variants(omicron,[cough,fatigue,headache,sneezing,'sore throat','runny nose','chest pain','burst of confusion','difficulty breathing','loss of speech or mobility']).
+
+symptoms(mild,[fever,cough,fatigue,'loss of taste',headache,'runny nose', sneezing]).
+symptoms(moderate,['sore throat','muscle pain']).
+symptoms(severe,['difficulty breathing','loss of speech or mobility','chest pain','burst of confusion']).
+
+underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV','heart
+ conditions',diabetes,alzheimers,dementia,'cystic fibrosis','lung
+ disease','liver disease','kidney disease']).
+
+%underlying(omicron,[stroke,tuberulosis,'sickle cell','HIV']).
+
+patient(name('jane'),age('20'),gender('female'),temp('35'),dizzy('yes'),faint('no'),blurry('no'),systolic('135'),diastolic('79')).
 
 menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(M,append,new(Title,label)),send(Title,append,''),
@@ -30,89 +42,48 @@ menu:-new(M,dialog('COVID-19 Diagnosis System')),
     send(M,append,H1),
     send(M,append,H2,below),
 
-    send(H2,append,button(new_Symptom, message(@prolog,new_symptom))),
+    send(H2,append,button(new_Variant, message(@prolog,new_variant))),
 
     %pushes next button into a new line.
     send(H2,append,new(Lbl1,label)),send(Lbl1,append,''),
 
     send(H2,append,button(underlying_Condition, message(@prolog,ucondition))),
+
     send(H2,append,new(Lbl2,label)),send(Lbl2,append,''),
+
     send(H2,append,button(patient_Diagnostic,message(@prolog,patient_diagnostic))),
+
     send(H2,append,new(Lbl3,label)),send(Lbl3,append,''),
-    send(H2,append,button(covid_Statistics,message(@prolog,updatestats))),
+
+    send(H2,append,button(covid_Statistics,message(@prolog,stats_display))),
+
     send(H1,append,new(NewV1,label)),send(NewV1,append,'Welcome to Covid-19 Diagnosis System of the Ministry of Health.'),
 
     send(M,open).
 
 
-new_symptom:-
-    new(NS,dialog('Add Symptom')), send(NS,append,new(label)),
-
-   % send(NS,append,new(NS,label)),send(NS,append,'Enter new Symptom information for the different variants'),
-    send(NS,append,button(add_regular_symptom,message(@prolog,new_regular_symptom))),
-    send(NS,append,new(Lbl35,label)),send(Lbl35,append,''),
-    send(NS,append,button(add_delta_symptom,message(@prolog,new_delta_symptom))),
-    send(NS,append,new(Lbl36,label)),send(Lbl36,append,''),
-    send(NS,append,button(add_omicron_symptom,message(@prolog,new_omicron_symptom))),
-
-    send(NS,open).
-
-new_regular_symptom:-new(V,dialog('New Regular Variant Symptom')),send(V,append,new(label)),
+new_variant:-new(V,dialog('New Variant')),send(V,append,new(label)),
     new(V1,dialog_group('')),
     new(V2,dialog_group('')),
 
     send(V,append,V1),
     send(V,append,V2,below),
 
-    send(V1,append,new(Vl,label)),send(Vl,append,'Enter new Symptom information'),
-    send(V2,append,new(RSymptoms,text_item(symptoms))),
-    send(V2,append,button(submit,message(@prolog,save_rsymptom,RSymptoms?selection))),
-    send(V,open).
+    send(V1,append,new(Vl,label)),send(Vl,append,'Enter new Varaint information'),
+    send(V2,append,new(Name,text_item(variant_Name))),
+    send(V2,append,new(Symptoms,text_item(symptoms))),
+    send(V2,append,button(submit,message(@prolog,submit,Name?selection,Symptoms?selection))),
 
-new_delta_symptom:-new(V,dialog('New Delta Variant Symptom')),send(V,append,new(label)),
-    new(V1,dialog_group('')),
-    new(V2,dialog_group('')),
-
-    send(V,append,V1),
-    send(V,append,V2,below),
-
-    send(V1,append,new(Vl,label)),send(Vl,append,'Enter new Symptom information'),
-    send(V2,append,new(DSymptoms,text_item(symptoms))),
-    send(V2,append,button(submit,message(@prolog,save_dsymptom,DSymptoms?selection))),
-    send(V,open).
-
-new_omicron_symptom:-new(V,dialog('New Omicron Variant Symptom')),send(V,append,new(label)),
-    new(V1,dialog_group('')),
-    new(V2,dialog_group('')),
-
-    send(V,append,V1),
-    send(V,append,V2,below),
-
-    send(V1,append,new(Vl,label)),send(Vl,append,'Enter new Symptom information'),
-    send(V2,append,new(OSymptoms,text_item(symptoms))),
-    send(V2,append,button(submit,message(@prolog,save_osymptom,OSymptoms?selection))),
     send(V,open).
 
 
 %update variant list
-save_rsymptom(RSymptoms):-
-    regularsymptoms(Old),append(Old,[RSymptoms],New),
-    redefine_system_predicate('regularsymptoms'(_)),
-    retractall(regularsymptoms(_)),assertz(regularsymptoms(New)),
-    nl,write('Symptom:'),write(RSymptoms),write(' was added to the database').
-
-save_dsymptom(DSymptoms):-
-    deltasymptoms(Old),append(Old,[DSymptoms],New),
-    redefine_system_predicate('deltasymptoms'(_)),
-    retractall(deltasymptoms(_)),assertz(deltasymptoms(New)),
-    nl,write('Symptom:'),write(DSymptoms),write(' was added to the database').
-
-save_osymptom(OSymptoms):-
-
-    omicronsymptoms(Old),append(Old,[OSymptoms],New),
-    redefine_system_predicate('omicronsymptoms'(_)),
-    retractall(omicronsymptoms(_)),assert(deltasymptoms(New)),
-    nl,write('Symptom:'),write(OSymptoms),write(' was added to the database').
+submit(Name,Symptoms):-
+       variants(Name,Old),append(Old,[Symptoms],New),
+       redefine_system_predicate('variants'(_,_)),
+       retractall(variants(_)),
+    assertz(variants(Name,(New))),
+    nl,write(Symptoms), write(' added to '),write(Name), write(' variant').
 
 
 ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
@@ -121,14 +92,14 @@ ucondition:- new(C,dialog('Underlying Condition')),send(C,append,new(label)),
     new(C2,dialog_group('')),send(C,append, C2,below),
 
     send(C2,append,button(new_Underlying_Conditions,message(@prolog,add_ucondition))),
-    send(C2,append,new(Lbl1a,label)),send(Lbl1a,append,''),
+    send(C2,append,new(CLbl1,label)),send(CLbl1,append,''),
     send(C2,append,button(view_Underlying_Conditons,message(@prolog,view_ucondition))),
     send(C1,append,new(NewCH,label)),send(NewCH,append,'This system allow you to add or view Underlying Conditions'),
     send(C1,append,new(NewCH1,label)),send(NewCH1,append,'associated with the Omicron Variant.'),
 
     send(C,open).
 
-patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label)),
+patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis Form' )),send(D,append,new(label)),
     new(DG1,dialog_group('')),
     new(DG2,dialog_group('')),
     new(DG3,dialog_group('')),
@@ -138,7 +109,7 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(D,append,new(Name,text_item(name))),
    send(D,append,new(Age, text_item(age))),
    send(D,append,new(Gender,menu(gender,marked))),
-   send(D,append,new(Temperature,text_item(temperature))),
+   send(D,append,new(Temperature,text_item('temperature(C)'))),
    send(D,append,new(D1,label)),send(D1,append,'Have you experienced any of the following symptoms?'),
    send(D,append,new(Dizzy,menu(dizziness,marked))),
    send(D,append,new(Faint,menu(fainting,marked))),
@@ -180,7 +151,7 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(DG4,append,new(Heart,menu(heart_Conditions,marked))),
    send(DG4,append,new(Alz,menu(alzheimers,marked))),
    send(DG4,append,new(Cys,menu(cystic_Fibrosis,marked))),
-   send(DG3,append,new(Liver,menu(liver_Disease,marked))),
+   send(DG4,append,new(Liver,menu(liver_Disease,marked))),
 
 
    send(Gender,append,female), send(Gender,append,male),
@@ -219,23 +190,207 @@ patient_diagnostic:- new(D,dialog('Covid-19 Diagnosis')),send(D,append,new(label
    send(SysR,type,int),
    send(DiaR,type,int),
 
-  send(D,append,button(accept, message(@prolog,save_patient, Name?selection, Age?selection, Gender?selection, Temperature?selection,Dizzy?selection,  Faint?selection,Blur?selection,SysR?selection,DiaR?selection,Fever?selection,Fatigue?selection,Head?selection,Sore?selection,DiffB?selection,Chest?selection,Losm?selection,Cough?selection,Lot?selection,Run?selection,Muscle?selection,Sneeze?selection,Boc?selection,Cancer?selection,Dia?selection,Lung?selection,Kid?selection,Stroke?selection,Sick?selection,Heart?selection,Alz?selection,Cys?selection,Liver?selection))),
+   send(D,append,button(accept, message(@prolog,save_diagnosis_prolog, Name?selection, Age?selection, Gender?selection, Temperature?selection,
+                                        Dizzy?selection, Faint?selection, Blur?selection, SysR?selection, DiaR?selection, Fever?selection,
+                                       Fatigue?selection, Head?selection, Sore?selection, DiffB?selection, Chest?selection, Losm?selection,
+                                       Cough?selection, Lot?selection, Run?selection, Muscle?selection, Sneeze?selection, Boc?selection,
+                                       Cancer?selection, Tb?selection, HIV?selection, Dia?selection, Dem?selection, Lung?selection,
+                                       Kid?selection, Stroke?selection, Sick?selection, Heart?selection, Alz?selection, Cys?selection,
+                                       Liver?selection))),
 
 
     send(D,open).
+
+save_diagnosis_prolog(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,
+                      DiffB,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Tb,HIV,Dia,Dem,Lung,Kid,
+                      Stroke,Sick,Heart,Alz,Cys,Liver):-
+
+    new(SDP,dialog('Diagnosis Information')),send(SDP,append,new(label)),
+    send(SDP,append,new(SDP1,label)),send(SDP1,append,'Name :'),
+    send(SDP,append,new(SDP1A,label)),send(SDP1A,append,Name),
+    send(SDP1A,alignment, left),
+    send(SDP,append,new(SDP2,label)),send(SDP2,append,'Age :'),
+    send(SDP,append,new(SDP2A,label)),send(SDP2A,append,Age),
+    send(SDP,append,new(SDP3,label)),send(SDP3,append,'Gender :'),
+    send(SDP,append,new(SDP3A,label)),send(SDP3A,append,Gender),
+
+    Ftemp is ((Temperature*1.8)+32),
+
+    send(SDP,append,new(SDP4,label)),send(SDP4,append,'Temperature(F) :'),
+    send(SDP,append,new(SDP4A,label)),send(SDP4A,append, Ftemp),
+
+    (Dizzy == 'yes' -> Dizzyval is 1; Dizzyval is 0),
+    (Faint == 'yes' -> Faintval is 1; Faintval is 0),
+    (Blur == 'yes' -> Blurval is 1; Blurval is 0),
+
+    Hyper is Dizzyval + Faintval + Blurval,
+
+    send(SDP,append,new(SDP5,label)),send(SDP5,append,'Systolic Reading :'),
+    send(SDP,append,new(SDP5A,label)),send(SDP5A,append,SysR),
+
+    send(SDP,append,new(SDP6,label)),send(SDP6,append,'Diastolic Reading :'),
+    send(SDP,append,new(SDP6A,label)),send(SDP6A,append,DiaR),
+
+    send(SDP,append,new(HyperLbl,label)),
+
+
+    ((Hyper = 3,SysR >= 140, DiaR >= 90 )->
+    send(HyperLbl,append,'You have High Blood Pressure');
+
+    ((Hyper >0, Hyper < 3), Faintval = 1, (SysR < 140, SysR >= 120), (DiaR > 80,DiaR =< 89) )->
+    send(HyperLbl, append,'You are at risk of High Blood Pressure');
+
+    (Hyper = 0, SysR < 120, DiaR <80) ->
+    send(HyperLbl,append,'You have Normal Blood Pressure')),
+
+    (Fever == 'yes' -> Feverval is 1; Feverval is 0),
+    (Fatigue == 'yes' -> Fatigueval is 1; Fatigueval is 0),
+    (Head == 'yes' -> Headval is 1; Headval is 0),
+    (Sore == 'yes' -> Soreval is 1; Soreval is 0),
+    (DiffB == 'yes' -> DiffBval is 1; DiffBval is 0),
+    (Chest == 'yes' -> Chestval is 1; Chestval is 0),
+    (Losm == 'yes' -> Losmval is 1; Losmval is 0),
+    (Cough == 'yes' -> Coughval is 1; Coughval is 0),
+    (Lot == 'yes' -> Lotval is 1; Lotval is 0),
+    (Run == 'yes' -> Runval is 1; Runval is 0),
+    (Muscle == 'yes' -> Muscleval is 1; Muscleval is 0),
+    (Sneeze == 'yes' -> Sneezeval is 1; Sneezeval is 0),
+    (Boc == 'yes' -> Bocval is 1; Bocval is 0),
+
+    (Cancer == 'yes' -> Cancerval is 1; Cancerval is 0),
+    (Kid == 'yes' -> Kidval is 1; Kidval is 0),
+    (Tb == 'yes' -> Tbval is 1; Tbval is 0),
+    (HIV == 'yes' -> HIVval is 1; HIVval is 0),
+    (Dia == 'yes' -> Diaval is 1; Diaval is 0),
+    (Dem == 'yes' -> Demval is 1; Demval is 0),
+    (Lung == 'yes' -> Lungval is 1; Lungval is 0),
+    (Stroke == 'yes' -> Strokeval is 1; Strokeval is 0),
+    (Sick == 'yes' -> Sickval is 1; Sickval is 0),
+    (Heart == 'yes' -> Heartval is 1; Heartval is 0),
+    (Alz == 'yes' -> Alzval is 1; Alzval is 0),
+    (Cys == 'yes' -> Cysval is 1; Cysval is 0),
+    (Liver == 'yes' -> Liverval is 1; Liverval is 0),
+
+    Covid_common is Feverval + Fatigueval + Coughval + Headval + Lotval,
+
+    Underlyingval is Cancerval + Kidval + Tbval + HIVval +Diaval + Demval
+    + Lungval + Strokeval + Sickval + Heartval + Alzval + Cysval + Liverval,
+
+    % might add high temperature as a condition for not statement for regualar covid
+
+    send(SDP,append,new(InfectionLbl,label)),
+    ((Covid_common = 5, Ftemp > 100, Runval = 1,Soreval = 1, Muscleval = 1, DiffBval = 1)->
+    send(InfectionLbl, append, 'You have the Delta Variant of Covid-19'), Delval is 1, Covidval is 1, Mildval is 1;
+
+    (Covid_common = 5,Ftemp > 100, Sneezeval = 1, Soreval = 1, Runval = 1, Chestval = 1, Bocval =1,
+     DiffBval = 1, Losmval = 1, Underlyingval > 0 ) ->
+    send(InfectionLbl, append, 'You have the Omicron Variant of Covid-19'), Omival is 1, Covidval is 1, Sevval is 1 ;
+
+    (Covid_common = 5,Ftemp > 100) ->
+    send(InfectionLbl, append,'You have Covid-19'), Covidval is 1,Mildval is 1;
+
+    (Covid_common = 0,Ftemp < 100) ->
+    send(InfectionLbl,append, 'You do not have Covid-19')),
+
+    %update statistics
+
+    send(SDP,open),
+      updatestats(Covidval,Delval,Omival,Mildval,Sevval).
+
+
+
+save_diagnosis_python(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,DiffB,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,Tb,HIV,Dia,Dem,Lung,Kid,
+                      Stroke,Sick,Heart,Alz,Cys,Liver):-
+
+    nl,write('Name: '),write(Name),
+    nl,write('Age: '),write(Age),
+    nl,write('Gender: '),write(Gender),
+    Ftemp is ((Temperature*1.8)+32),
+
+    nl,write('Temperature(F): '), write(Ftemp),
+
+     (Dizzy == 'yes' -> Dizzyval is 1; Dizzyval is 0),
+    (Faint == 'yes' -> Faintval is 1; Faintval is 0),
+    (Blur == 'yes' -> Blurval is 1; Blurval is 0),
+
+    Hyper is Dizzyval + Faintval + Blurval,
+    (   (Hyper = 3,SysR >= 140, DiaR >= 90 )->
+    nl,write(Name),write(' has High Blood Pressure');
+
+    ((Hyper >0, Hyper < 3), Faintval = 1, (SysR < 140, SysR >= 120), (DiaR > 80,DiaR =< 89))->
+    nl,write(Name),write(' is risk of High Blood Pressure');
+
+     (Hyper = 0, SysR < 120, DiaR <80) ->
+    nl,write(Name),write(' has a normal Blood Pressure')),
+
+     (Fever == 'yes' -> Feverval is 1; Feverval is 0),
+    (Fatigue == 'yes' -> Fatigueval is 1; Fatigueval is 0),
+    (Head == 'yes' -> Headval is 1; Headval is 0),
+    (Sore == 'yes' -> Soreval is 1; Soreval is 0),
+    (DiffB == 'yes' -> DiffBval is 1; DiffBval is 0),
+    (Chest == 'yes' -> Chestval is 1; Chestval is 0),
+    (Losm == 'yes' -> Losmval is 1; Losmval is 0),
+    (Cough == 'yes' -> Coughval is 1; Coughval is 0),
+    (Lot == 'yes' -> Lotval is 1; Lotval is 0),
+    (Run == 'yes' -> Runval is 1; Runval is 0),
+    (Muscle == 'yes' -> Muscleval is 1; Muscleval is 0),
+    (Sneeze == 'yes' -> Sneezeval is 1; Sneezeval is 0),
+    (Boc == 'yes' -> Bocval is 1; Bocval is 0),
+
+    (Cancer == 'yes' -> Cancerval is 1; Cancerval is 0),
+    (Kid == 'yes' -> Kidval is 1; Kidval is 0),
+    (Tb == 'yes' -> Tbval is 1; Tbval is 0),
+    (HIV == 'yes' -> HIVval is 1; HIVval is 0),
+    (Dia == 'yes' -> Diaval is 1; Diaval is 0),
+    (Dem == 'yes' -> Demval is 1; Demval is 0),
+    (Lung == 'yes' -> Lungval is 1; Lungval is 0),
+    (Stroke == 'yes' -> Strokeval is 1; Strokeval is 0),
+    (Sick == 'yes' -> Sickval is 1; Sickval is 0),
+    (Heart == 'yes' -> Heartval is 1; Heartval is 0),
+    (Alz == 'yes' -> Alzval is 1; Alzval is 0),
+    (Cys == 'yes' -> Cysval is 1; Cysval is 0),
+    (Liver == 'yes' -> Liverval is 1; Liverval is 0),
+
+    Covid_common is Feverval + Fatigueval + Coughval + Headval + Lotval,
+
+    Underlyingval is Cancerval + Kidval + Tbval + HIVval +Diaval + Demval
+    + Lungval + Strokeval + Sickval + Heartval + Alzval + Cysval + Liverval,
+
+    ((Covid_common = 5, Ftemp > 100, Runval = 1,Soreval = 1, Muscleval = 1, DiffBval = 1)->
+     nl,write(Name),write(' has the Delta Variant of Covid-19'),Delval is 1, Covidval is 1, Mildval is 1;
+
+    (Covid_common = 5,Ftemp > 100, Sneezeval = 1, Soreval = 1, Runval = 1, Chestval = 1, Bocval =1,
+     DiffBval = 1, Losmval = 1, Underlyingval > 0 ) ->
+    nl,write(Name), write( ' has the Omicron Variant of Covid-19'),Omival is 1, Covidval is 1,Sevval is 1;
+
+    (Covid_common = 5,Ftemp > 100) ->
+     nl,write(Name),write(' has Covid-19'), Covidval is 1, Mildval is 1;
+
+    (Covid_common = 0,Ftemp < 100) ->
+     nl,write(Name), write(' does not have Covid-19')),
+
+   %update statistics
+    updatestats(Covidval,Delval,Omival,Mildval,Sevval).
+
+
 
 add_ucondition:- new(U,dialog('New Condition')),send(U,append,new(label)),
     send(U,append,new(Uconditon,text_item(underlying_Condition))),
     send(U,append,button(add,message(@prolog,add,Uconditon?selection))),
     send(U,open).
 
-view_ucondition:- underlying(omicron,Who),nl,write('Omicron Underlying Conditions:'),nl,nl,write(Who).
+view_ucondition:-
+       underlying(omicron,Who),nl,write('Omicron Underlying Conditions:'),nl,nl,write(Who).
 
+
+
+%adds another condition to database
 add(Ucondition):- underlying(omicron,Old),append(Old,[Ucondition],New),
      redefine_system_predicate('underlying'(_,_)),
        retractall(underlying(_)),
     asserta(underlying(omicron,(New))),
     another_ucondition.
+
 
 another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
      send(A,append,new(NewA1,label)),send(NewA1,append,'Would you like to add another'),
@@ -243,182 +398,40 @@ another_ucondition:- new(A,dialog('Add More')),send(A,append,new(label)),
      send(A,append,button(no,message(@prolog,close/1))),
      send(A,open).
 
+updatestats(Covid,Delta,Omicron,Mild,Severe):-  statistics(Total,Deltavar,Omivar,Mildsymp,Sevsymp), Newtotal is Total + Covid,
+       Newdeltavar is Deltavar + Delta,
+       Newomivar is Omivar + Omicron,
+       Newmildsymp is Mildsymp + Mild,
+       Newsevsymp is Sevsymp + Severe,
 
-%displays patient's COVID-19 results
-save_patient(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,Diffb,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,
-             Dia,Lung,Kid,Stroke,Sick,Heart,Alz,Cys,Liver):-
+       retractall(statistics(_,_,_,_,_)),asserta(statistics(Newtotal,Newdeltavar,Newomivar,Newmildsymp,Newsevsymp)).
 
-    new(S,dialog('Patient Result')),send(S,append,new(label)),
-    send(S,append,new(Lbl4,label)), send(Lbl4,append,'Name: '),
-    send(S,append,new(Lbl5,label)), send(Lbl5,append,Name),
+stats_display:-
+       statistics(Newtotal,Newdeltavar,Newomivar,Newmildsymp,Newsevsymp),
 
-    send(S,append,new(Lbl6,label)), send(Lbl6,append,'Age: '),
-    send(S,append,new(Lbl7,label)), send(Lbl7,append,Age),
+       nl,write('The Total number of people with Covid-19 is: '), write(Newtotal),
 
-    send(S,append,new(Lbl8,label)), send(Lbl8,append,'Gender: '),
-    send(S,append,new(Lbl9,label)), send(Lbl9,append,Gender),
+       Deltapercent is Newdeltavar/Newtotal * 100,
+       nl,nl,write('The percentage of Delta variant recorded: '), write(Deltapercent),write('%'),
 
-    Temp is(((Temperature)*9)/5+ 32),
-    send(S,append,new(Lbl10,label)),send(Lbl10,append,'Temperature(Farenheit):'),
-    send(S,append,new(Lbl11,label)),send(Lbl11,append,Temp),
+       Omipercent is Newomivar/Newtotal * 100,
+       nl,write('The percentage of Omicron variant recorded: '), write(Omipercent),write('%'),
 
-    send(S,append,new(Lbl20,label)),send(Lbl20,append,'Systolic Reading:'),
-    send(S,append,new(Lbl21,label)),send(Lbl21,append,SysR),
-    send(S,append,new(Lbl22,label)),send(Lbl22,append,'Diastolic Reading:'),
-    send(S,append,new(Lbl23,label)),send(Lbl23,append,DiaR),
+        Mildpercent is Newmildsymp/Newtotal * 100,
+       nl,write('The percentage of Mild Symptoms recorded: '), write(Mildpercent),write('%'),
 
-    send(S,append,new(Lbl12,label)),
-    (SysR<90,DiaR<60 -> send(Lbl12,append,'Blood Pressure Reading: Patient blood pressure is low');
-    SysR<120,DiaR<80 -> send(Lbl12,append,'Blood Pressure Reading: Patient blood pressure is normal');
-    SysR<129,DiaR<89 -> send(Lbl12,append,'Blood Pressure Reading: Patient blood pressure is elevated');
-    SysR>130,DiaR>90 -> send(Lbl12,append,'Blood Pressure Reading: Patient blood pressure is high')),
-
-    (Cancer =='yes'-> Cancerval is 1; Cancerval is 0),
-    (Dia =='yes'-> Diaval is 1; Diaval is 0),
-    (Lung =='yes'-> Lungval is 1; Lungval is 0),
-    (Kid =='yes'-> Kidval is 1; Kidval is 0),
-    (Stroke =='yes'-> Strokeval is 1; Strokeval is 0),
-    (Liver =='yes'-> Liverval is 1; Liverval is 0),
-    (Sick =='yes'-> Sickval is 1;Sickval  is 0),
-    (Heart=='yes'-> Heartval is 1; Heartval is 0),
-    (Alz =='yes'-> Alzval is 1; Alzval is 0),
-    (Cys =='yes'-> Cysval is 1; Cysval is 0),
-
-    Underlyingfactor is Cancerval+Diaval+Lungval+Kidval+Strokeval+Liverval+Sickval+Heartval+Alzval+Cysval,
-
-    (Dizzy =='yes'-> Dissval is 7; Dissval is 0),
-    (Faint =='yes'-> Faintval is 7; Faintval is 0),
-    (Blur  =='yes'-> Blurval is 7; Blurval is 0),
-    (Fever=='yes'-> Feverval is 5; Feverval is 0),
-    (Fatigue =='yes'-> Fatigueval is 6; Fatigueval is 0),
-    (Head =='yes'-> Headval is 3; Headval is 0),
-    (Sore =='yes'-> Soreval is 5;Soreval  is 0),
-    (Diffb =='yes'-> Diffbval is 12; Diffbval is 0),
-    (Chest =='yes'-> Chestval is 9; Chestval is 0),
-    (Losm =='yes'-> Losmval is 14; Losmval is 0),
-    (Cough =='yes'-> Coughval is 1; Coughval is 0),
-    (Lot =='yes'-> Lotval is 6; Lotval is 0),
-    (Run =='yes'-> Runval is 3; Runval is 0),
-    (Muscle =='yes'-> Muscleval is 8; Muscleval is 0),
-    (Sneeze =='yes'-> Sneezeval is 2; Sneezeval is 0),
-    (Boc =='yes'-> Bocval is 13; Bocval is 0),
-
-    Riskfactor is Dissval+Faintval+Blurval+Feverval+Fatigueval+Headval+Soreval+Diffbval+Chestval+Losmval+Coughval+Lotval+Runval+Muscleval+Sneezeval+  Bocval,
-
-    %determines whether a person has the regular, delta or omicron variant
-    send(S,append,new(Lbl24,label)),
-    (Riskfactor=<28 ->Deltacount is 0, Omicroncount is 0,Mildcount is 1, Severecount is 0,Totalcount is 1, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Regular Covid-19 variant, Patient should quarantine for 14 days');
-
-   (Riskfactor>28,Riskfactor=<58) ->Deltacount is 1, Omicroncount is 0,Mildcount is 0, Severecount is 1,Totalcount is 1, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Delta Covid-19 variant, Patient should visit the doctor immediately');
-
-    (Riskfactor>58,Underlyingfactor >=1) ->Deltacount is 0, Omicroncount is 1, Mildcount is 0, Severecount is 1, Underlyingcount is 1, Totalcount is 1, send(Lbl24,append,'Covid-19 Diagnosis: Patient may have the Ominicron Covid-19 variant, Patient should visit the doctor immediately')),
+        Sevpercent is Newsevsymp/Newtotal * 100,
+       nl,write('The percentage of Severe Symptoms recorded: '), write(Sevpercent),write('%').
 
 
-    updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount,Totalcount),
-
-
-    send(S,open).
-
-save_patient_python(Name,Age,Gender,Temperature,Dizzy,Faint,Blur,SysR,DiaR,Fever,Fatigue,Head,Sore,Diffb,Chest,Losm,Cough,Lot,Run,Muscle,Sneeze,Boc,Cancer,
-             Dia,Lung,Kid,Stroke,Sick,Heart,Alz,Cys,Liver):-
-
-    nl,write('Name: '),write(Name),
-    nl,write('Age: '),write(Age),
-    nl,write('Gender: '),write(Gender),
-    Ftemp is ((Temperature*1.8)+32),
-    nl,write('Temperature(F): '), write(Ftemp),
-
-     ((SysR<90,DiaR<60) -> nl,write('Blood Pressure Reading: Patient blood pressure is low');
-    (SysR<120,DiaR<80) -> nl,write('Blood Pressure Reading: Patient blood pressure is normal');
-    (SysR<129,DiaR<89) -> nl,write('Blood Pressure Reading: Patient blood pressure is elevated');
-    (SysR>130,DiaR>89) -> nl,write('Blood Pressure Reading: Patient blood pressure is high')),
-
-    (Cancer =='yes'-> Cancerval is 1; Cancerval is 0),
-    (Dia =='yes'-> Diaval is 1; Diaval is 0),
-    (Lung =='yes'-> Lungval is 1; Lungval is 0),
-    (Kid =='yes'-> Kidval is 1; Kidval is 0),
-    (Stroke =='yes'-> Strokeval is 1; Strokeval is 0),
-    (Liver =='yes'-> Liverval is 1; Liverval is 0),
-    (Sick =='yes'-> Sickval is 1;Sickval  is 0),
-    (Heart=='yes'-> Heartval is 1; Heartval is 0),
-    (Alz =='yes'-> Alzval is 1; Alzval is 0),
-    (Cys =='yes'-> Cysval is 1; Cysval is 0),
-
-    Underlyingfactor is Cancerval+Diaval+Lungval+Kidval+Strokeval+Liverval+Sickval+Heartval+Alzval+Cysval,
-
-    (Dizzy =='yes'-> Dissval is 7; Dissval is 0),
-    (Faint =='yes'-> Faintval is 7; Faintval is 0),
-    (Blur  =='yes'-> Blurval is 7; Blurval is 0),
-    (Fever=='yes'-> Feverval is 5; Feverval is 0),
-    (Fatigue =='yes'-> Fatigueval is 6; Fatigueval is 0),
-    (Head =='yes'-> Headval is 3; Headval is 0),
-    (Sore =='yes'-> Soreval is 5;Soreval  is 0),
-    (Diffb =='yes'-> Diffbval is 12; Diffbval is 0),
-    (Chest =='yes'-> Chestval is 9; Chestval is 0),
-    (Losm =='yes'-> Losmval is 14; Losmval is 0),
-    (Cough =='yes'-> Coughval is 1; Coughval is 0),
-    (Lot =='yes'-> Lotval is 6; Lotval is 0),
-    (Run =='yes'-> Runval is 3; Runval is 0),
-    (Muscle =='yes'-> Muscleval is 8; Muscleval is 0),
-    (Sneeze =='yes'-> Sneezeval is 2; Sneezeval is 0),
-    (Boc =='yes'-> Bocval is 13; Bocval is 0),
-
-    Riskfactor is Dissval+Faintval+Blurval+Feverval+Fatigueval+Headval+Soreval+Diffbval+Chestval+Losmval+Coughval+Lotval+Runval+Muscleval+Sneezeval+  Bocval,
-
-      (Riskfactor=<28 ->Deltacount is 0, Omicroncount is 0,Mildcount is 1, Severecount is 0,Totalcount is 1,
-       nl,write('Covid-19 Diagnosis: Patient may have the Regular Covid-19 variant, Patient should quarantine for 14 days');
-
-   (Riskfactor>28,Riskfactor=<58) ->Deltacount is 1, Omicroncount is 0,Mildcount is 0, Severecount is 1,Totalcount is 1,
-       nl,write('Covid-19 Diagnosis: Patient may have the Delta Covid-19 variant, Patient should visit the doctor immediately');
-
-    (Riskfactor>58,Underlyingfactor >=1) ->Deltacount is 0, Omicroncount is 1, Mildcount is 0, Severecount is 1, Underlyingcount is 1, Totalcount is 1,
-       nl,write('Covid-19 Diagnosis: Patient may have the Ominicron Covid-19 variant, Patient should visit the doctor immediately')),
-
-
-    updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount,Totalcount).
-
-updatestats(Deltacount,Omicroncount,Mildcount,Severecount,Underlyingcount,Totalcount):-
-    stats(Dcount,Ocount,Mcount,Scount,Ucount,Total),
-
-    NewDcount is Dcount+Deltacount,
-    NewOcount is Ocount+Omicroncount,
-    NewMcount is Mcount+Mildcount,
-    NewScount is Scount+Severecount,
-    NewUcount is Ucount+Underlyingcount,
-    NewTcount is Total+Totalcount,
-
-    retractall(stats(_,_,_,_,_,_)),
-
-    asserta(stats(NewDcount,NewOcount,NewMcount,NewScount,NewUcount,NewTcount)),
-    new(CS,dialog('Covid-19 Statistics')),send(CS,append,new(label)),
-
-    send(CS,append,new(Lblt,label)),send(Lblt,append,'Total number of cases:'),
-    send(CS,append,new(Lblt1,label)),send(Lblt1,append,NewTcount),
-
-
-    Mildstat is(NewMcount/NewTcount)*100,
-    send(CS,append,new(Lbl25,label)),send(Lbl25,append,'Percentage of persons with Mild Symptoms:'),
-    send(CS,append,new(Lbl26,label)),send(Lbl26,append,Mildstat),
-
-    Severestat is(NewScount/NewTcount)*100,
-    send(CS,append,new(Lbl27,label)),send(Lbl27,append,'Percentage of Persons with Severe Symptoms:'),
-    send(CS,append,new(Lbl28,label)),send(Lbl28,append,Severestat),
-
-    Deltastat is(NewDcount/NewTcount)*100,
-    send(CS,append,new(Lbl29,label)),send(Lbl29,append,'Percentage of Persons with Delta Variant:'),
-    send(CS,append,new(Lbl30,label)),send(Lbl30,append,Deltastat),
-
-    Omicronstat is(NewOcount/NewTcount)*100,
-    send(CS,append,new(Lbl31,label)),send(Lbl31,append,'Percentage of Persons with Omicron Variant:'),
-    send(CS,append,new(Lbl32,label)),send(Lbl32,append,Omicronstat),
-
-    OUnderlyingstat is(NewUcount/NewTcount)*100,
-    send(CS,append,new(Lbl33,label)),send(Lbl33,append,'Percentages of Persons with Omicron and Underlying Conditions: '),
-
-    send(CS,append,new(Lbl34,label)),send(Lbl34,append,OUnderlyingstat),
-
-    send(CS,open).
-
-
-
-
+stats_display_python:-
+       statistics(Newtotal,Newdeltavar,Newomivar,Newmildsymp,Newsevsymp),
+       nl,write('The Total number of people with Covid-19 is: '), write(Newtotal),
+       Deltapercent is Newdeltavar/Newtotal * 100,
+       nl,nl,write('The percentage of Delta variant recorded: '), write(Deltapercent),write('%'),
+       Omipercent is Newomivar/Newtotal * 100,
+       nl,write('The percentage of Omicron variant recorded: '), write(Omipercent),write('%'),
+        Mildpercent is Newmildsymp/Newtotal * 100,
+       nl,write('The percentage of Mild Symptoms recorded: '), write(Mildpercent),write('%'),
+        Sevpercent is Newsevsymp/Newtotal * 100,
+       nl,write('The percentage of Severe Symptoms recorded: '), write(Sevpercent),write('%').

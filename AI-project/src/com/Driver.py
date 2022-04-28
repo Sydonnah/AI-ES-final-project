@@ -27,6 +27,7 @@ first = Button(main,
                command=Diagnosis_form.Diagnosis
                )
 
+
 first.grid(row=1, column=0, padx=5, pady=10)
 head.grid(row=0, column=0, padx=5, pady=10)
 main.mainloop()

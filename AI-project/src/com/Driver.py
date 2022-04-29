@@ -28,6 +28,19 @@ first = Button(main,
                )
 
 
+def view_stats():
+    Stats = list(prolog.query("stats_display_python"))
+
+    print(Stats)
+
+
+second = Button(main,
+                text="Covid Statistics",
+                command=view_stats
+                )
+
+
 first.grid(row=1, column=0, padx=5, pady=10)
+second.grid(row=2, column=0, padx=5, pady=10)
 head.grid(row=0, column=0, padx=5, pady=10)
 main.mainloop()

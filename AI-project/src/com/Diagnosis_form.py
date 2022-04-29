@@ -1,6 +1,6 @@
 from tkinter import *
 from pyswip import Prolog
-from setuptools import Command
+
 
 # Patient Diagnositics Form
 
@@ -41,13 +41,13 @@ def Diagnosis():
         window, text="Do you or your family have a history of any of the following conditions?")
     underlyingsymp1 = Label(window, text="Cancer")
     underlyingsymp2 = Label(window, text="Stroke")
-    underlyingsymp3 = Label(window, text="Tuberculosis")
+
     underlyingsymp4 = Label(window, text="Sickle Cell")
-    underlyingsymp5 = Label(window, text="HIV")
+
     underlyingsymp6 = Label(window, text="Heart Conditions")
     underlyingsymp7 = Label(window, text="Diabetes")
     underlyingsymp8 = Label(window, text="Alzheimers")
-    underlyingsymp9 = Label(window, text="Dementia")
+
     underlyingsymp10 = Label(window, text="Cystic Fibrosis")
     underlyingsymp11 = Label(window, text="Lung Disease")
     underlyingsymp12 = Label(window, text="Liver Disease")
@@ -339,13 +339,13 @@ def Diagnosis():
 
     cancer = StringVar(window)
     stroke = StringVar(window)
-    tube = StringVar(window)
+
     sick = StringVar(window)
-    hiv = StringVar(window)
+
     heart = StringVar(window)
     dia = StringVar(window)
     alz = StringVar(window)
-    dem = StringVar(window)
+
     cys = StringVar(window)
     lung = StringVar(window)
     liver = StringVar(window)
@@ -380,20 +380,6 @@ def Diagnosis():
         offvalue="Yes",
         variable=stroke
     )
-    underlyingsymp3_option1 = Checkbutton(
-        window,
-        text="Yes",
-        onvalue="Yes",
-        offvalue="No",
-        variable=tube
-    )
-    underlyingsymp3_option2 = Checkbutton(
-        window,
-        text="No",
-        onvalue="No",
-        offvalue="Yes",
-        variable=tube
-    )
 
     underlyingsymp4_option1 = Checkbutton(
         window,
@@ -408,20 +394,6 @@ def Diagnosis():
         onvalue="No",
         offvalue="Yes",
         variable=sick
-    )
-    underlyingsymp5_option1 = Checkbutton(
-        window,
-        text="Yes",
-        onvalue="Yes",
-        offvalue="No",
-        variable=hiv
-    )
-    underlyingsymp5_option2 = Checkbutton(
-        window,
-        text="No",
-        onvalue="No",
-        offvalue="Yes",
-        variable=hiv
     )
 
     underlyingsymp6_option1 = Checkbutton(
@@ -467,20 +439,6 @@ def Diagnosis():
         onvalue="No",
         offvalue="Yes",
         variable=alz
-    )
-    underlyingsymp9_option1 = Checkbutton(
-        window,
-        text="Yes",
-        onvalue="Yes",
-        offvalue="No",
-        variable=dem
-    )
-    underlyingsymp9_option2 = Checkbutton(
-        window,
-        text="No",
-        onvalue="No",
-        offvalue="Yes",
-        variable=dem
     )
 
     underlyingsymp10_option1 = Checkbutton(
@@ -544,9 +502,9 @@ def Diagnosis():
     )
 
     def GetInfo():
-
-        Status = list(Prolog.query("save_diagnosis_python(" + nameentry.get() + "," + ageentry.get() + ","+gender.get() + ","+tempentry.get()+","+dizzy.get()+","+faint.get()+","+blur.get()+","+sysentry.get()+","+diaentry.get()+","+fever.get() + ","+fatigue.get()+","+head.get()+","+sore.get()+","+diff_breath.get()+","+chest.get() +
-                      ","+losm.get()+"," + cough.get()+","+l_o_t.get()+","+run_nose.get()+"," + muscle.get()+","+sneeze.get()+","+b_o_c.get()+","+cancer.get()+","+tube.get()+","+hiv.get()+","+dia.get()+","+dem.get()+","+lung.get()+","+kid.get()+","+stroke.get()+","+sick.get()+","+heart.get()+","+alz.get()+","+cys.get()+","+liver.get()+")"))
+        prolog = Prolog()
+        Status = list(prolog.query("save_patient_python(" + nameentry.get() + "," + ageentry.get() + ","+gender.get() + ","+tempentry.get()+","+dizzy.get()+","+faint.get()+","+blur.get()+","+sysentry.get()+","+diaentry.get()+","+fever.get() + ","+fatigue.get()+","+head.get()+","+sore.get()+","+diff_breath.get()+","+chest.get() +
+                      ","+losm.get()+"," + cough.get()+","+l_o_t.get()+","+run_nose.get()+"," + muscle.get()+","+sneeze.get()+","+b_o_c.get()+","+cancer.get()+","+dia.get()+","+lung.get()+","+kid.get()+","+stroke.get()+","+sick.get()+","+heart.get()+","+alz.get()+","+cys.get()+","+liver.get()+")"))
 
         print(Status)
 
@@ -585,17 +543,17 @@ def Diagnosis():
     underlyinglabel.grid(row=19, column=0, columnspan=3, padx=2, pady=10)
     underlyingsymp1.grid(row=20, column=0, padx=2, pady=2)
     underlyingsymp2.grid(row=20, column=4, padx=2, pady=2)
-    underlyingsymp3.grid(row=21, column=0, padx=2, pady=2)
-    underlyingsymp4.grid(row=21, column=4, padx=2, pady=2)
-    underlyingsymp5.grid(row=22, column=0, padx=2, pady=2)
-    underlyingsymp6.grid(row=22, column=4, padx=2, pady=2)
-    underlyingsymp7.grid(row=23, column=0, padx=2, pady=2)
-    underlyingsymp8.grid(row=23, column=4, padx=2, pady=2)
-    underlyingsymp9.grid(row=24, column=0, padx=2, pady=2)
-    underlyingsymp10.grid(row=24, column=4, padx=2, pady=2)
-    underlyingsymp11.grid(row=25, column=0, padx=2, pady=2)
-    underlyingsymp12.grid(row=25, column=4, padx=2, pady=2)
-    underlyingsymp13.grid(row=26, column=0, padx=2, pady=2)
+
+    underlyingsymp4.grid(row=21, column=0, padx=2, pady=2)
+
+    underlyingsymp6.grid(row=21, column=4, padx=2, pady=2)
+    underlyingsymp7.grid(row=22, column=0, padx=2, pady=2)
+    underlyingsymp8.grid(row=22, column=4, padx=2, pady=2)
+
+    underlyingsymp10.grid(row=23, column=0, padx=2, pady=2)
+    underlyingsymp11.grid(row=23, column=4, padx=2, pady=2)
+    underlyingsymp12.grid(row=24, column=0, padx=2, pady=2)
+    underlyingsymp13.grid(row=24, column=4, padx=2, pady=2)
 
     nameentry.grid(row=0, column=1,  padx=2, pady=2)
     ageentry.grid(row=0, column=3,  padx=2, pady=2)
@@ -644,28 +602,25 @@ def Diagnosis():
     underlyingsymp1_option2.grid(row=20, column=2, padx=2, pady=2)
     underlyingsymp2_option1.grid(row=20, column=5, padx=2, pady=2)
     underlyingsymp2_option2.grid(row=20, column=7, padx=2, pady=2)
-    underlyingsymp3_option1.grid(row=21, column=1, padx=2, pady=2)
-    underlyingsymp3_option2.grid(row=21, column=2, padx=2, pady=2)
-    underlyingsymp4_option1.grid(row=21, column=5, padx=2, pady=2)
-    underlyingsymp4_option2.grid(row=21, column=7, padx=2, pady=2)
-    underlyingsymp5_option1.grid(row=22, column=1, padx=2, pady=2)
-    underlyingsymp5_option2.grid(row=22, column=2, padx=2, pady=2)
-    underlyingsymp6_option1.grid(row=22, column=5, padx=2, pady=2)
-    underlyingsymp6_option2.grid(row=22, column=7, padx=2, pady=2)
-    underlyingsymp7_option1.grid(row=23, column=1, padx=2, pady=2)
-    underlyingsymp7_option2.grid(row=23, column=2, padx=2, pady=2)
-    underlyingsymp8_option1.grid(row=23, column=5, padx=2, pady=2)
-    underlyingsymp8_option2.grid(row=23, column=7, padx=2, pady=2)
-    underlyingsymp9_option1.grid(row=24, column=1, padx=2, pady=2)
-    underlyingsymp9_option2.grid(row=24, column=2, padx=2, pady=2)
-    underlyingsymp10_option1.grid(row=24, column=5, padx=2, pady=2)
-    underlyingsymp10_option2.grid(row=24, column=7, padx=2, pady=2)
-    underlyingsymp11_option1.grid(row=25, column=1, padx=2, pady=2)
-    underlyingsymp11_option2.grid(row=25, column=2, padx=2, pady=2)
-    underlyingsymp12_option1.grid(row=25, column=5, padx=2, pady=2)
-    underlyingsymp12_option2.grid(row=25, column=7, padx=2, pady=2)
-    underlyingsymp13_option1.grid(row=26, column=1, padx=2, pady=2)
-    underlyingsymp13_option2.grid(row=26, column=2, padx=2, pady=2)
+
+    underlyingsymp4_option1.grid(row=21, column=1, padx=2, pady=2)
+    underlyingsymp4_option2.grid(row=21, column=2, padx=2, pady=2)
+
+    underlyingsymp6_option1.grid(row=21, column=5, padx=2, pady=2)
+    underlyingsymp6_option2.grid(row=21, column=7, padx=2, pady=2)
+    underlyingsymp7_option1.grid(row=22, column=1, padx=2, pady=2)
+    underlyingsymp7_option2.grid(row=22, column=2, padx=2, pady=2)
+    underlyingsymp8_option1.grid(row=22, column=5, padx=2, pady=2)
+    underlyingsymp8_option2.grid(row=22, column=7, padx=2, pady=2)
+
+    underlyingsymp10_option1.grid(row=23, column=1, padx=2, pady=2)
+    underlyingsymp10_option2.grid(row=23, column=2, padx=2, pady=2)
+    underlyingsymp11_option1.grid(row=23, column=5, padx=2, pady=2)
+    underlyingsymp11_option2.grid(row=23, column=7, padx=2, pady=2)
+    underlyingsymp12_option1.grid(row=24, column=1, padx=2, pady=2)
+    underlyingsymp12_option2.grid(row=24, column=2, padx=2, pady=2)
+    underlyingsymp13_option1.grid(row=24, column=5, padx=2, pady=2)
+    underlyingsymp13_option2.grid(row=24, column=7, padx=2, pady=2)
 
     submit_button.grid(row=40, column=0, padx=2, pady=15)
 
